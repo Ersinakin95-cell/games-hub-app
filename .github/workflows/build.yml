@@ -12,20 +12,36 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.24.3'
           channel: 'stable'
 
-      - run: flutter pub get
+      - name: Create Flutter Project Structure
+        run: |
+          mkdir temp_app
+          flutter create --org com.gameshub --app-name games_hub temp_app
+          cp pubspec.yaml temp_app/pubspec.yaml
+          cp lib/main.dart temp_app/lib/main.dart
+          cd temp_app
+          flutter pub get
 
-      - run: flutter build apk --release
+      - name: Build APK
+        run: |
+          cd temp_app
+          flutter build apk --release
 
-      - run: flutter build appbundle --release
+      - name: Build AAB
+        run: |
+          cd temp_app
+          flutter build appbundle --release
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
         with:
           name: release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: temp_app/build/app/outputs/flutter-apk/app-release.apk
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload AAB
+        uses: actions/upload-artifact@v4
         with:
           name: release-aab
-          path: build/app/outputs/bundle/release/app-release.aab
+          path: temp_app/build/app/outputs/bundle/release/app-release.aab
