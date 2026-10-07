@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package0/connectivity_plus/connectivity_plus.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,7 +13,7 @@ class GamesHubApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Games Hub',
+      title: 'Ersinakyn Aziz',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,
@@ -63,7 +63,7 @@ class _MainGameScreenState extends State<MainGameScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'GAMES HUB',
+          'Ersinakyn Aziz',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             letterSpacing: 1.2,
@@ -132,7 +132,7 @@ class _MainGameScreenState extends State<MainGameScreen> {
           const Icon(Icons.wifi_off, size: 64, color: Colors.grey),
           const SizedBox(height: 16),
           const Text(
-            'Интернет қосылымы жоқ',
+            'Интернет байланышы жок',
             style: TextStyle(fontSize: 18, color: Colors.white),
           ),
           const SizedBox(height: 16),
@@ -146,7 +146,7 @@ class _MainGameScreenState extends State<MainGameScreen> {
               });
               webViewController?.reload();
             },
-            child: const Text('Қайталау', style: TextStyle(color: Colors.white)),
+            child: const Text('Кайра аракет кылуу', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
