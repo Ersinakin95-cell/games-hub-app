@@ -15,12 +15,17 @@ jobs:
           flutter-version: '3.24.3'
           channel: 'stable'
 
-      - name: Create Flutter Project Structure
+      - name: Create Flutter Project Structure & Add Permissions
         run: |
           mkdir temp_app
           flutter create --org com.gameshub temp_app
           cp pubspec.yaml temp_app/pubspec.yaml
           cp lib/main.dart temp_app/lib/main.dart
+          
+          # AndroidManifest.xml файлына Интернет рұқсатын қосу
+          SED_CMD="s/<application/<uses-permission android:name=\"android.permission.INTERNET\" \/>\n    <application/"
+          sed -i "$SED_CMD" temp_app/android/app/src/main/AndroidManifest.xml
+          
           cd temp_app
           flutter pub get
 
