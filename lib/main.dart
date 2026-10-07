@@ -1,43 +1,41 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const GamesHubApp());
+  runApp(const MyApp());
 }
 
-class GamesHubApp extends StatelessWidget {
-  const GamesHubApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Games Hub',
-      theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color(0xFF121212),
-      ),
-      home: const MainPage(),
+      theme: ThemeData.dark(),
+      home: const HomeScreen(),
     );
   }
 }
 
-class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _MainPageState extends State<MainPage> {
-  int _selectedIndex = 0;
+class _HomeScreenState extends State<HomeScreen> {
+  int _currentIndex = 0;
 
   final List<Widget> _pages = [
-    const GamesView(),
-    const VideosView(),
-    const SongsView(),
-    const MakalView(),
-    const AbayView(),
-    const MukagaliView(),
-    const AdminView(),
+    const GamesTab(),
+    const VideosTab(),
+    const SongsTab(),
+    const MakalTab(),
+    const AbayTab(),
+    const MukagaliTab(),
+    const AdminTab(),
   ];
 
   @override
@@ -45,31 +43,31 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('🎮 Games Hub — Қазақша Платформа'),
-        backgroundColor: Colors.blue.shade900,
+        backgroundColor: Colors.blue,
         centerTitle: true,
       ),
       body: Column(
         children: [
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(10),
             color: Colors.blueAccent,
             child: const Text(
               '✨ Қош келдіңіз! Платформамызға қош келдіңіз! ✨',
               textAlign: TextAlign.center,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.white),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.white),
             ),
           ),
-          Expanded(child: _pages[_selectedIndex]),
+          Expanded(child: _pages[_currentIndex]),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) => setState(() => _selectedIndex = index),
+        currentIndex: _currentIndex,
+        onTap: (index) => setState(() => _currentIndex = index),
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.amber,
         unselectedItemColor: Colors.white70,
-        backgroundColor: const Color(0xFF1E1E1E),
+        backgroundColor: Colors.black87,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.sports_esports), label: 'Ойындар'),
           BottomNavigationBarItem(icon: Icon(Icons.video_library), label: 'Видео'),
@@ -84,18 +82,17 @@ class _MainPageState extends State<MainPage> {
   }
 }
 
-class GamesView extends StatelessWidget {
-  const GamesView({super.key});
+class GamesTab extends StatelessWidget {
+  const GamesTab({super.key});
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(8),
       itemCount: 100,
       itemBuilder: (context, i) => Card(
-        color: const Color(0xFF2C2C2C),
         child: ListTile(
-          leading: const Icon(Icons.sports_esports, color: Colors.amber),
+          leading: const Icon(Icons.gamepad, color: Colors.amber),
           title: Text('🎮 Ойын #${i + 1}'),
         ),
       ),
@@ -103,16 +100,15 @@ class GamesView extends StatelessWidget {
   }
 }
 
-class VideosView extends StatelessWidget {
-  const VideosView({super.key});
+class VideosTab extends StatelessWidget {
+  const VideosTab({super.key});
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(8),
       itemCount: 100,
       itemBuilder: (context, i) => Card(
-        color: const Color(0xFF2C2C2C),
         child: ListTile(
           leading: const Icon(Icons.play_circle_fill, color: Colors.red),
           title: Text('🎥 Видео #${i + 1}'),
@@ -122,16 +118,15 @@ class VideosView extends StatelessWidget {
   }
 }
 
-class SongsView extends StatelessWidget {
-  const SongsView({super.key});
+class SongsTab extends StatelessWidget {
+  const SongsTab({super.key});
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(8),
       itemCount: 100,
       itemBuilder: (context, i) => Card(
-        color: const Color(0xFF2C2C2C),
         child: ListTile(
           leading: const Icon(Icons.music_note, color: Colors.green),
           title: Text('🎵 Ән #${i + 1}'),
@@ -141,8 +136,8 @@ class SongsView extends StatelessWidget {
   }
 }
 
-class MakalView extends StatelessWidget {
-  const MakalView({super.key});
+class MakalTab extends StatelessWidget {
+  const MakalTab({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -150,17 +145,15 @@ class MakalView extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       children: const [
         Card(
-          color: Color(0xFF252525),
           child: Padding(
             padding: EdgeInsets.all(16),
-            child: Text('📖 "Өнер - ағып жатқан бұлақ, Тіл - таусылмайтын бұлақ."', style: TextStyle(fontSize: 16)),
+            child: Text('📖 "Өнер - ағып жатқан бұлақ, Тіл - таусылмайтын бұлақ."', style: TextStyle(fontSize: 15)),
           ),
         ),
         Card(
-          color: Color(0xFF252525),
           child: Padding(
             padding: EdgeInsets.all(16),
-            child: Text('📖 "Еңбек етсең ерінбей, Тояды қарның тіленбей."', style: TextStyle(fontSize: 16)),
+            child: Text('📖 "Еңбек етсең ерінбей, Тояды қарның тіленбей."', style: TextStyle(fontSize: 15)),
           ),
         ),
       ],
@@ -168,8 +161,8 @@ class MakalView extends StatelessWidget {
   }
 }
 
-class AbayView extends StatelessWidget {
-  const AbayView({super.key});
+class AbayTab extends StatelessWidget {
+  const AbayTab({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -177,13 +170,12 @@ class AbayView extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       children: const [
         Card(
-          color: Color(0xFF252525),
           child: Padding(
             padding: EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('📜 Абай Құнанбайұлы — Бірінші сөз', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.amber)),
+                Text('📜 Абай Құнанбайұлы — Бірінші сөз', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.amber)),
                 SizedBox(height: 8),
                 Text('Бұл жасқа келгенше жақсы өткіздік пе, жаман өткіздік пе, әйтеуір өмірді өткіздік: алыстық, жұлыстық, айтыстық, тартыстық - әрекет қылдық...'),
               ],
@@ -195,8 +187,8 @@ class AbayView extends StatelessWidget {
   }
 }
 
-class MukagaliView extends StatelessWidget {
-  const MukagaliView({super.key});
+class MukagaliTab extends StatelessWidget {
+  const MukagaliTab({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -204,13 +196,12 @@ class MukagaliView extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       children: const [
         Card(
-          color: Color(0xFF252525),
           child: Padding(
             padding: EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('✍️ Мұқағали Мақатаев — Отан', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.amber)),
+                Text('✍️ Мұқағали Мақатаев — Отан', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.amber)),
                 SizedBox(height: 8),
                 Text('Отан! Отан!\nСен болмасаң, не етер ем?\nMәңгілікке бақытсыз боп өтер ем...'),
               ],
@@ -222,18 +213,18 @@ class MukagaliView extends StatelessWidget {
   }
 }
 
-class AdminView extends StatelessWidget {
-  const AdminView({super.key});
+class AdminTab extends StatelessWidget {
+  const AdminTab({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
           Container(
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: Colors.grey.shade900, borderRadius: BorderRadius.circular(8)),
+            color: Colors.grey.shade900,
             child: const Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
