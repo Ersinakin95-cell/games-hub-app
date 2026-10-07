@@ -32,7 +32,7 @@ jobs:
       - name: Build APK
         run: |
           cd temp_app
-          flutter build apk --release
+          flutter build apk --debug
 
       - name: Build AAB
         run: |
