@@ -18,7 +18,7 @@ jobs:
       - name: Create Flutter Project Structure
         run: |
           mkdir temp_app
-          flutter create --org com.gameshub --app-name games_hub temp_app
+          flutter create --org com.gameshub temp_app
           cp pubspec.yaml temp_app/pubspec.yaml
           cp lib/main.dart temp_app/lib/main.dart
           cd temp_app
