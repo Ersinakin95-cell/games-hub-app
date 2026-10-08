@@ -1,140 +1,306 @@
-import 'package:flutter/material.dart';
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ersinakyn Aziz - Games Hub</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        body {
+            background-color: #0d1117;
+            color: #ffffff;
+            padding-bottom: 70px;
+        }
+        header {
+            text-align: center;
+            padding: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #00e5ff;
+            background: #161b22;
+            border-bottom: 1px solid #30363d;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .page {
+            display: none;
+            padding: 15px;
+        }
+        .active-page {
+            display: block;
+        }
+        .card {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .card:active {
+            background-color: #21262d;
+        }
+        .card h3 {
+            font-size: 16px;
+            color: #f0f6fc;
+            margin-bottom: 5px;
+        }
+        .card p {
+            font-size: 13px;
+            color: #8b949e;
+        }
+        .coins-banner {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .coins-title {
+            color: #00e5ff;
+            font-weight: bold;
+        }
+        .coins-amount {
+            color: #e3b341;
+            font-weight: bold;
+        }
+        .ad-space {
+            background: #161b22;
+            border: 1px dashed #30363d;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .ad-space h4 {
+            color: #f0f6fc;
+            margin-bottom: 5px;
+        }
+        .ad-space p {
+            font-size: 12px;
+            color: #8b949e;
+        }
+        /* Detail viewer */
+        .detail-content {
+            display: none;
+            background: #0d1117;
+            padding: 10px 0;
+            font-size: 14px;
+            color: #c9d1d9;
+            line-height: 1.6;
+            border-top: 1px solid #30363d;
+            margin-top: 10px;
+        }
+        /* Bottom Nav */
+        .nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: #161b22;
+            border-top: 1px solid #30363d;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #8b949e;
+            font-size: 11px;
+            cursor: pointer;
+            text-decoration: none;
+            width: 16%;
+        }
+        .nav-item.active {
+            color: #00e5ff;
+        }
+        .nav-icon {
+            font-size: 18px;
+            margin-bottom: 2px;
+        }
+        iframe {
+            width: 100%;
+            height: 400px;
+            border: none;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
 
-void main() {
-  runApp(const MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: GamesHubMain(),
-  ));
-}
+    <header>Ersinakyn Aziz - Games Hub</header>
 
-class GamesHubMain extends StatefulWidget {
-  const GamesHubMain({super.key});
+    <!-- 1. GAMES PAGE -->
+    <div id="page-games" class="page active-page">
+        <div class="coins-banner">
+            <span class="coins-title">GAMES HUB</span>
+            <span class="coins-amount">150 Coins</span>
+        </div>
+        <div class="ad-space">
+            <h4>Monetization Space (Google AdSense / Monetag)</h4>
+            <p>Жарнама блогы осы жерде шығады</p>
+        </div>
+        
+        <h3 style="margin-bottom: 10px; color: #8b949e;">Ойындар тізімі:</h3>
+        <div class="card" onclick="playGame('https://m.famobi.com/html5/om-nom-run/')">
+            <h3>🏃 Om Nom Run</h3>
+            <p>Қызықты ранер ойыны</p>
+        </div>
+        <div class="card" onclick="playGame('https://m.famobi.com/html5/smart-bubble-shooter/')">
+            <h3>🎯 Bubble Shooter</h3>
+            <p>Шарларды ату ойыны</p>
+        </div>
+        <div class="card" onclick="playGame('https://m.famobi.com/html5/2048/')">
+            <h3>🎲 2048 Game</h3>
+            <p>Сандарды сәйкестендіру логикалық ойыны</p>
+        </div>
 
-  @override
-  State<GamesHubMain> createState() => _GamesHubMainState();
-}
+        <div id="game-container" style="display:none; margin-top:15px;">
+            <button onclick="closeGame()" style="background:#da3633; color:white; border:none; padding:8px 15px; border-radius:5px; margin-bottom:10px; cursor:pointer;">Ойынды жабу ✖</button>
+            <iframe id="game-frame" src=""></iframe>
+        </div>
+    </div>
 
-class _GamesHubMainState extends State<GamesHubMain> {
-  int _selectedIndex = 0;
+    <!-- 2. ABAI PAGE -->
+    <div id="page-abai" class="page">
+        <h3 style="margin-bottom: 10px; color: #8b949e;">Абай мұрасы:</h3>
+        <div class="card" onclick="toggleDetail('abai-1')">
+            <h3>📖 1. Бірінші қара сөз</h3>
+            <p>Қазақша мазмұн (ашу үшін басыңыз)</p>
+            <div id="abai-1" class="detail-content">
+                Бұл жасқа келгенше жақсы өткіздік пе, жаман өткіздік пе, әйтеуір өмірді сүрдік... Енді не істеу керек? Ел бағу? Жоқ, елге бағым жоқ. Мал бағу? Жоқ, баға алмаймын. Ғылым бағу? Жоқ, ғылымды ұғатын кісі жоқ. Ақыры ойладым: осы ойыма келген нәрселерді жаза берейін, кімде-кім ішінен керекті сөз тапса, жазып алсын...
+            </div>
+        </div>
+        <div class="card" onclick="toggleDetail('abai-2')">
+            <h3>📖 2. Екінші қара сөз</h3>
+            <p>Қазақша мазмұн (ашу үшін басыңыз)</p>
+            <div id="abai-2" class="detail-content">
+                Мен бала күнімде естуші едім, біздің қазақ сартты көрсе, «үлгісіз сарт» деуші еді... Енді қарап тұрсам, ноғайлар да, сарттар да, орыстар да бізден өнер-білімге алдеқайда ілгері екен.
+            </div>
+        </div>
+    </div>
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          backgroundColor: const Color(0xFF161B26),
-          title: const Text('Қош келдіңіз!', style: TextStyle(color: Colors.white)),
-          content: const Text('Платформаға қош келдіңіз! Мұнда Абай мен Мұқағали мұрасы, 100 қазақша ән, видео және ойындар жинақталған.', style: TextStyle(color: Colors.white70)),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('Бастау', style: TextStyle(color: Color(0xFF00F2FE))),
-            )
-          ],
-        ),
-      );
-    });
-  }
+    <!-- 3. MUKAGALI PAGE -->
+    <div id="page-mukagali" class="page">
+        <h3 style="margin-bottom: 10px; color: #8b949e;">Мұқағали Мақатаев поэзиясы:</h3>
+        <div class="card" onclick="toggleDetail('muka-1')">
+            <h3>✍️ Көгілдір көлдей</h3>
+            <p>Өлеңдер жинағы</p>
+            <div id="muka-1" class="detail-content">
+                Поэзия! Менімен егіз бе едің?<br>
+                Сен мені сезесің бе, неге іздедім?<br>
+                Сонда да бір өзіңмен тілдесемін...
+            </div>
+        </div>
+    </div>
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF090A10),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF0D0E15),
-        title: const Text('Ersinakyn Aziz - Games Hub', style: TextStyle(color: Color(0xFF00F2FE))),
-        centerTitle: true,
-      ),
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: [
-          _buildGamesTab(),
-          _buildContentTab('Абай мұрасы (45 қара сөз, өлеңдер)', Colors.amber, Icons.book),
-          _buildContentTab('Мұқағали өлеңдері (100-ден астам өлең)', Colors.cyanAccent, Icons.auto_stories),
-          _buildContentTab('Таза Қазақша Әндер (100 ән)', Colors.lightGreenAccent, Icons.music_note),
-          _buildContentTab('Таза Қазақша Видеолар (100 видео)', Colors.redAccent, Icons.videocam),
-          _buildProfileTab(),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (idx) => setState(() => _selectedIndex = idx),
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xFF00F2FE),
-        unselectedItemColor: Colors.grey,
-        backgroundColor: const Color(0xFF0D0E15),
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.sports_esports), label: 'Games'),
-          BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Абай'),
-          BottomNavigationBarItem(icon: Icon(Icons.auto_stories), label: 'Мұқағали'),
-          BottomNavigationBarItem(icon: Icon(Icons.music_note), label: 'Музыка'),
-          BottomNavigationBarItem(icon: Icon(Icons.videocam), label: 'Видео'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Профиль'),
-        ],
-      ),
-    );
-  }
+    <!-- 4. MUSIC PAGE -->
+    <div id="page-music" class="page">
+        <h3 style="margin-bottom: 10px; color: #8b949e;">Музыка:</h3>
+        <div class="card">
+            <h3>🎵 Қазақша әндер жинағы</h3>
+            <p>Плейлист дайындалуда...</p>
+        </div>
+    </div>
 
-  Widget _buildGamesTab() {
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: const Color(0xFF161B26), borderRadius: BorderRadius.circular(12)),
-          child: const Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('GAMES HUB', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.cyanAccent)),
-              Text('150 Coins', style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold)),
-            ],
-          ),
-        ),
-        const SizedBox(height: 16),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: const Color(0xFF161B26), borderRadius: BorderRadius.circular(12)),
-          child: const Column(
-            children: [
-              Text('Monetization Space (Google AdSense)', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-              SizedBox(height: 8),
-              Text('In real deployments, users viewing ads here generate revenue for you!', style: TextStyle(color: Colors.grey, fontSize: 12)),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
+    <!-- 5. VIDEO PAGE -->
+    <div id="page-video" class="page">
+        <h3 style="margin-bottom: 10px; color: #8b949e;">Видеолар:</h3>
+        <div class="card">
+            <h3>🎬 Видео контент</h3>
+            <p>Жақында қосылады...</p>
+        </div>
+    </div>
 
-  Widget _buildContentTab(String title, Color color, IconData icon) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(12),
-      itemCount: 100,
-      itemBuilder: (context, i) => Card(
-        color: const Color(0xFF161B26),
-        child: ListTile(
-          leading: Icon(icon, color: color),
-          title: Text('${i + 1}. $title', style: const TextStyle(color: Colors.white)),
-          subtitle: const Text('Қазақша мазмұн', style: TextStyle(color: Colors.grey)),
-        ),
-      ),
-    );
-  }
+    <!-- 6. PROFILE PAGE -->
+    <div id="page-profile" class="page">
+        <h3 style="margin-bottom: 10px; color: #8b949e;">Жеке профиль:</h3>
+        <div class="card">
+            <h3>👤 Пайдаланушы</h3>
+            <p>Монеталар: 150 Coins</p>
+        </div>
+    </div>
 
-  Widget _buildProfileTab() {
-    return const Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.account_circle, size: 80, color: Color(0xFF00F2FE)),
-          SizedBox(height: 12),
-          Text('Ersinakyn Aziz', style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold)),
-          SizedBox(height: 8),
-          Text('Баланс: 0.00 USD', style: TextStyle(color: Colors.amber, fontSize: 16)),
-        ],
-      ),
-    );
-  }
-}
+    <!-- BOTTOM NAVIGATION -->
+    <div class="nav-bar">
+        <div class="nav-item active" onclick="switchTab('games', this)">
+            <span class="nav-icon">🎮</span>
+            <span>Games</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('abai', this)">
+            <span class="nav-icon">📙</span>
+            <span>Абай</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('mukagali', this)">
+            <span class="nav-icon">📚</span>
+            <span>Мұқағали</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('music', this)">
+            <span class="nav-icon">🎵</span>
+            <span>Музыка</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('video', this)">
+            <span class="nav-icon">🎥</span>
+            <span>Видео</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('profile', this)">
+            <span class="nav-icon">👤</span>
+            <span>Профиль</span>
+        </div>
+    </div>
+
+    <script>
+        // Бөлімдерді ауыстыру функциясы
+        function switchTab(tabId, element) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active-page'));
+
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+
+            document.getElementById('page-' + tabId).classList.add('active-page');
+            element.classList.add('active');
+        }
+
+        // Тізімдегі мәтінді ашу/жабу функциясы
+        function toggleDetail(id) {
+            const el = document.getElementById(id);
+            if (el.style.display === "block") {
+                el.style.display = "none";
+            } else {
+                el.style.display = "block";
+            }
+        }
+
+        // Ойынды іске қосу функциясы
+        function playGame(url) {
+            const container = document.getElementById('game-container');
+            const frame = document.getElementById('game-frame');
+            frame.src = url;
+            container.style.display = 'block';
+            window.scrollTo({ top: container.offsetTop, behavior: 'smooth' });
+        }
+
+        // Ойынды жабу
+        function closeGame() {
+            const container = document.getElementById('game-container');
+            const frame = document.getElementById('game-frame');
+            frame.src = '';
+            container.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
