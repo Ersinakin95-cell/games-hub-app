@@ -37,7 +37,6 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Кіргенде ашылатын сәлемдесу терезесі
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _showWelcomeDialog();
     });
@@ -134,7 +133,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
   }
 }
 
-// 1. GAMES HUB БАСТЫ БЕТІ
+// 1. GAMES HUB БАСТЫ БЕТІ (100 ОЙЫН)
 class GamesHubHomePage extends StatelessWidget {
   const GamesHubHomePage({super.key});
 
@@ -323,3 +322,58 @@ class GamesHubHomePage extends StatelessWidget {
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(backgroundColor: Colors.indigo),
                       onPressed: () {},
+                      child: const Text('Play Now'),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// 2. АБАЙ ҚАРА СӨЗДЕРІ МЕН ӨЛЕҢДЕРІ
+class AbaiPage extends StatelessWidget {
+  const AbaiPage({super.key});
+
+  List<Map<String, String>> get abaiItems {
+    List<Map<String, String>> items = [];
+    for (int i = 1; i <= 45; i++) {
+      items.add({
+        'title': '$i-ші қара сөз',
+        'text': 'Абай Құнанбайұлының $i-ші қара сөзі. Терең философиялық ойлар мен адамгершілік өсиеттері.'
+      });
+    }
+    List<String> poems = [
+      'Ғылым таппай мақтанба', 'Көзімнің қарасы', 'Желсіз түнде жарық ай',
+      'Күз', 'Қыс', 'Жаз', 'Жасымда ғылым бар деп ескермедім',
+      'Интернатта оқып жүр', 'Сегіз аяқ', 'Өлең – сөздің патшасы'
+    ];
+    for (int i = 0; i < 60; i++) {
+      String title = poems[i % poems.length];
+      items.add({
+        'title': 'Өлең: $title (${i + 1})',         'text': '$title...\n\nАбайдың бұл туындысы халқын білім мен өнерге шақырады.'
+      });
+    }
+    return items;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final list = abaiItems;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Абай мұрасы (${list.length} шығарма)'),
+        centerTitle: true,
+      ),
+      body: ListView.builder(
+        padding: const EdgeInsets.all(12),
+        itemCount: list.length,
+        itemBuilder: (context, index) {
+          final item = list[index];
+          return Card(
+            color: const Color(0xFF161B26),
+            margin: const EdgeInsets.
