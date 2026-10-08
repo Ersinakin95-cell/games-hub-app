@@ -189,4 +189,66 @@ class AbaiPage extends StatelessWidget {
   }
 }
 
-// 3. MUK
+// 3. MUKAGALI PAGE
+class MukagaliPage extends StatelessWidget {
+  const MukagaliPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        const Text('Мұқағали Мақатаев поэзиясы:', style: TextStyle(color: Color(0xFF8B949E), fontSize: 16)),
+        const SizedBox(height: 10),
+        AbaiPage._buildExpandableCard(
+          '✍️ Поэзия',
+          'Поэзия! Менімен егіз бе едің?\nСен мені сезесің бе, неге іздедім?\nСонда да бір өзіңмен тілдесемін...',
+        ),
+      ],
+    );
+  }
+}
+
+// 4. MUSIC PAGE
+class MusicPage extends StatelessWidget {
+  const MusicPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text('🎵 Музыка бөлімі дайындалуда...', style: TextStyle(color: Color(0xFF8B949E))),
+    );
+  }
+}
+
+// 5. VIDEO PAGE
+class VideoPage extends StatelessWidget {
+  const VideoPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text('🎬 Видео контент жақында қосылады...', style: TextStyle(color: Color(0xFF8B949E))),
+    );
+  }
+}
+
+// 6. PROFILE PAGE
+class ProfilePage extends StatelessWidget {
+  const ProfilePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Card(
+        color: const Color(0xFF161B22),
+        child: const ListTile(
+          leading: Icon(Icons.person, color: Color(0xFF00E5FF)),
+          title: Text('Пайдаланушы'),
+          subtitle: Text('Баланс: 150 Coins', style: TextStyle(color: Color(0xFFE3B341))),
+        ),
+      ),
+    );
+  }
+}
