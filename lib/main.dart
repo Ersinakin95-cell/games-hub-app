@@ -1,259 +1,347 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const GamesHubApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class GamesHubApp extends StatelessWidget {
+  const GamesHubApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Games Hub',
-      theme: ThemeData.dark(),
-      home: const HomeScreen(),
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: const Color(0xFF121212),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF1F1F1F),
+          elevation: 0,
+        ),
+      ),
+      home: const MainHomeScreen(),
     );
   }
 }
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class MainHomeScreen extends StatefulWidget {
+  const MainHomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<MainHomeScreen> createState() => _MainHomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 0;
+class _MainHomeScreenState extends State<MainHomeScreen> {
+  int _selectedIndex = 0;
 
-  final List<Widget> _pages = [
-    const GamesTab(),
-    const VideosTab(),
-    const SongsTab(),
-    const MakalTab(),
-    const AbayTab(),
-    const MukagaliTab(),
-    const AdminTab(),
+  final List<Widget> _pages = const [
+    AbaiPage(),
+    MukaqaliPage(),
+    GamesPage(),
+    MusicPage(),
+    VideoPage(),
+    ProfilePage(),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _pages,
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: Colors.amber,
+        unselectedItemColor: Colors.grey,
+        backgroundColor: const Color(0xFF1F1F1F),
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.menu_book),
+            label: 'Абай',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.auto_stories),
+            label: 'Мұқағали',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.sports_esports),
+            label: 'Ойындар',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.music_note),
+            label: 'Музыка',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.videocam),
+            label: 'Видео',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Профиль',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class AbaiPage extends StatelessWidget {
+  const AbaiPage({super.key});
+
+  final List<Map<String, String>> abaiWords = const [
+    {
+      'title': 'Бірінші қара сөз',
+      'text': 'Бұл жасқа келгенше жақсы өткіздік пе, жаман өткіздік пе, әйтеуір өмірдің біршамасын өткіздік...'
+    },
+    {
+      'title': 'Екінші қара сөз',
+      'text': 'Мен бала күнімде естуші едім, біздің қазақ өзбекті көрсе «сарт-сұрт» деуші еді...'
+    },
+    {
+      'title': 'Үшінші қара сөз',
+      'text': 'Қазақтың бір-біріне қастық қылатынының себебі неде?..'
+    },
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🎮 Games Hub — Қазақша Платформа'),
-        backgroundColor: Colors.blue,
+        title: const Text('Абайдың Қара сөздері'),
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(10),
-            color: Colors.blueAccent,
-            child: const Text(
-              '✨ Қош келдіңіз! Платформамызға қош келдіңіз! ✨',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.white),
-            ),
-          ),
-          Expanded(child: _pages[_currentIndex]),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index),
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.amber,
-        unselectedItemColor: Colors.white70,
-        backgroundColor: Colors.black87,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.sports_esports), label: 'Ойындар'),
-          BottomNavigationBarItem(icon: Icon(Icons.video_library), label: 'Видео'),
-          BottomNavigationBarItem(icon: Icon(Icons.music_note), label: 'Әндер'),
-          BottomNavigationBarItem(icon: Icon(Icons.menu_book), label: 'Мақалдар'),
-          BottomNavigationBarItem(icon: Icon(Icons.auto_stories), label: 'Абай'),
-          BottomNavigationBarItem(icon: Icon(Icons.history_edu), label: 'Мұқағали'),
-          BottomNavigationBarItem(icon: Icon(Icons.account_balance_wallet), label: 'Админ'),
-        ],
-      ),
-    );
-  }
-}
-
-class GamesTab extends StatelessWidget {
-  const GamesTab({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(8),
-      itemCount: 100,
-      itemBuilder: (context, i) => Card(
-        child: ListTile(
-          leading: const Icon(Icons.gamepad, color: Colors.amber),
-          title: Text('🎮 Ойын #${i + 1}'),
-        ),
-      ),
-    );
-  }
-}
-
-class VideosTab extends StatelessWidget {
-  const VideosTab({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(8),
-      itemCount: 100,
-      itemBuilder: (context, i) => Card(
-        child: ListTile(
-          leading: const Icon(Icons.play_circle_fill, color: Colors.red),
-          title: Text('🎥 Видео #${i + 1}'),
-        ),
-      ),
-    );
-  }
-}
-
-class SongsTab extends StatelessWidget {
-  const SongsTab({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(8),
-      itemCount: 100,
-      itemBuilder: (context, i) => Card(
-        child: ListTile(
-          leading: const Icon(Icons.music_note, color: Colors.green),
-          title: Text('🎵 Ән #${i + 1}'),
-        ),
-      ),
-    );
-  }
-}
-
-class MakalTab extends StatelessWidget {
-  const MakalTab({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(12),
-      children: const [
-        Card(
-          child: Padding(
-            padding: EdgeInsets.all(16),
-            child: Text('📖 "Өнер - ағып жатқан бұлақ, Тіл - таусылмайтын бұлақ."', style: TextStyle(fontSize: 15)),
-          ),
-        ),
-        Card(
-          child: Padding(
-            padding: EdgeInsets.all(16),
-            child: Text('📖 "Еңбек етсең ерінбей, Тояды қарның тіленбей."', style: TextStyle(fontSize: 15)),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class AbayTab extends StatelessWidget {
-  const AbayTab({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(12),
-      children: const [
-        Card(
-          child: Padding(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      body: ListView.builder(
+        padding: const EdgeInsets.all(12),
+        itemCount: abaiWords.length,
+        itemBuilder: (context, index) {
+          final item = abaiWords[index];
+          return Card(
+            color: const Color(0xFF2C2C2C),
+            margin: const EdgeInsets.only(bottom: 12),
+            child: ExpansionTile(
+              title: Text(
+                item['title']!,
+                style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.amber),
+              ),
               children: [
-                Text('📜 Абай Құнанбайұлы — Бірінші сөз', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.amber)),
-                SizedBox(height: 8),
-                Text('Бұл жасқа келгенше жақсы өткіздік пе, жаман өткіздік пе, әйтеуір өмірді өткіздік: алыстық, жұлыстық, айтыстық, тартыстық - әрекет қылдық...'),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class MukagaliTab extends StatelessWidget {
-  const MukagaliTab({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(12),
-      children: const [
-        Card(
-          child: Padding(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('✍️ Мұқағали Мақатаев — Отан', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.amber)),
-                SizedBox(height: 8),
-                Text('Отан! Отан!\nСен болмасаң, не етер ем?\nMәңгілікке бақытсыз боп өтер ем...'),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class AdminTab extends StatelessWidget {
-  const AdminTab({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            color: Colors.grey.shade900,
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Text('🟢 Онлайн: 1', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
-                Text('🔴 Офлайн: 0', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-          Card(
-            color: Colors.green.shade900,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  const Text('👑 Администратор Кабинеті', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 10),
-                  const Text('💵 Баланс: 0.00 $', style: TextStyle(fontSize: 16, color: Colors.amber)),
-                  const SizedBox(height: 15),
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.amber, foregroundColor: Colors.black),
-                    child: const Text('💸 Ақшаны шығару (Вывод)'),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    item['text']!,
+                    style: const TextStyle(fontSize: 15, height: 1.4),
                   ),
-                ],
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class MukaqaliPage extends StatelessWidget {
+  const MukaqaliPage({super.key});
+
+  final List<Map<String, String>> poems = const [
+    {
+      'title': 'Поэзия',
+      'text': 'Поэзия! Мұңдасым да, сырдасым,\nӨзің барда өзгеге есе бермеймін!'
+    },
+    {
+      'title': 'Үш бақытым',
+      'text': 'Ең бірінші бақытым — Халқым менің,\nСоған берем ойымның алтын кенін...'
+    },
+    {
+      'title': 'Фаризаға',
+      'text': 'Фариза! Фаризажан, Фариза қыз,\nӨмірде ақындардың бәрі жалғыз...'
+    },
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Мұқағали Мақатаев өлеңдері'),
+        centerTitle: true,
+      ),
+      body: ListView.builder(
+        padding: const EdgeInsets.all(12),
+        itemCount: poems.length,
+        itemBuilder: (context, index) {
+          final item = poems[index];
+          return Card(
+            color: const Color(0xFF2C2C2C),
+            margin: const EdgeInsets.only(bottom: 12),
+            child: ExpansionTile(
+              title: Text(
+                item['title']!,
+                style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.lightBlueAccent),
+              ),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    item['text']!,
+                    style: const TextStyle(fontSize: 15, height: 1.4, fontStyle: FontStyle.italic),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class GamesPage extends StatelessWidget {
+  const GamesPage({super.key});
+
+  final List<String> games = const ['Ойын 1', 'Ойын 2', 'Ойын 3', 'Ойын 4'];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('🎮 Ойындар каталогы'),
+        centerTitle: true,
+      ),
+      body: GridView.builder(
+        padding: const EdgeInsets.all(12),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+        ),
+        itemCount: games.length,
+        itemBuilder: (context, index) {
+          return Card(
+            color: const Color(0xFF2C2C2C),
+            child: Center(
+              child: Text(
+                games[index],
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
-          ),
-        ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class MusicPage extends StatelessWidget {
+  const MusicPage({super.key});
+
+  final List<String> tracks = const ['Ән 1', 'Ән 2', 'Ән 3', 'Ән 4'];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('🎵 Музыкалар'),
+        centerTitle: true,
+      ),
+      body: ListView.builder(
+        padding: const EdgeInsets.all(12),
+        itemCount: tracks.length,
+        itemBuilder: (context, index) {
+          return Card(
+            color: const Color(0xFF2C2C2C),
+            child: ListTile(
+              leading: const Icon(Icons.music_note, color: Colors.amber),
+              title: Text(tracks[index]),
+              trailing: const Icon(Icons.play_arrow, color: Colors.green),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class VideoPage extends StatelessWidget {
+  const VideoPage({super.key});
+
+  final List<String> videos = const ['Видео 1', 'Видео 2', 'Видео 3'];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('🎬 Видеолар'),
+        centerTitle: true,
+      ),
+      body: ListView.builder(
+        padding: const EdgeInsets.all(12),
+        itemCount: videos.length,
+        itemBuilder: (context, index) {
+          return Card(
+            color: const Color(0xFF2C2C2C),
+            margin: const EdgeInsets.only(bottom: 12),
+            child: ListTile(
+              leading: const Icon(Icons.play_circle_fill, color: Colors.redAccent, size: 40),
+              title: Text(videos[index]),
+              subtitle: const Text('Түрлі контент'),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class ProfilePage extends StatelessWidget {
+  const ProfilePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Жеке кабинет'),
+        centerTitle: true,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const CircleAvatar(
+              radius: 40,
+              backgroundColor: Colors.amber,
+              child: Icon(Icons.person, size: 50, color: Colors.black),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              decoration: BoxDecoration(
+                color: Colors.black54,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.amber.withOpacity(0.5)),
+              ),
+              child: const Text(
+                '💵 Баланс: 0.00 \$',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.amber,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Қош келдіңіз!',
+              style: TextStyle(fontSize: 18, color: Colors.white70),
+            ),
+          ],
+        ),
       ),
     );
   }
