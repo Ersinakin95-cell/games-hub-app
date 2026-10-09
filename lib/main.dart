@@ -73,8 +73,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final String _bannerAdUnitId = 'ca-app-pub-3613410984183490/6007334630';
 
-  // 🔑 Gemini API кілті:
-  final String _geminiApiKey = 'AQ.Ab8RN6KJjyjeuzGiTccaI4wZzK6ry8V2Az3gXzRF2LY2z2AQYw';
+  // 🔑 GitHub Secrets арқылы қауіпсіз түрде алынатын API кілт:
+  final String _geminiApiKey = const String.fromEnvironment('GEMINI_API_KEY');
 
   final Map<String, Map<String, String>> _localizedStrings = {
     'kk': {
@@ -146,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'btn_search': 'Buscar Receta',
       'subtitle': 'Asistente Culinario',
       'recipe_title': 'Receta Generada:',
-      'empty_alert': '¡Por favor ingrese un plato o ingredientes!',
+      'empty_alert': '¡Por favor ingrese un plato или ingredientes!',
       'lang_name': 'Spanish',
     },
     'zh': {
@@ -239,15 +239,15 @@ class _HomeScreenState extends State<HomeScreen> {
     You are BiteCraft AI, an expert master chef.
     Requested inputs: ${_ingredients.join(", ")}.
     
-    STRICT LANGUAGE RULE:
-    You MUST output the WHOLE recipe EXCLUSIVELY in $langName language.
-    Never output in Russian or English unless explicitly requested!
+    STRICT LANGUAGE REQUIREMENT:
+    Write the ENTIRE recipe output STRICTLY AND ONLY in this language: $langName (Language code: ${widget.currentLang}).
+    Do NOT output in any other language.
     
-    Provide a realistic, highly accurate step-by-step recipe:
+    Provide a full, highly authentic and accurate step-by-step recipe:
     - Dish Name (with emoji)
     - Preparation & Cooking Time | Estimated Calories
-    - Complete Ingredient List (with precise quantities)
-    - Detailed Step-by-Step Instructions.
+    - Complete Ingredient List (with precise quantities/measurements)
+    - Clear Step-by-Step Instructions.
     ''';
 
     try {
@@ -284,15 +284,26 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _generateSmartFallbackRecipe() {
+    final String query = _ingredients.join(" ").toLowerCase();
     String lang = widget.currentLang;
 
     setState(() {
-      if (lang == 'kk') {
-        _generatedRecipe = '🍳 **${_ingredients.join(", ")} тағамы**\n⏱ Дайындалу уақыты: 20 мин | 🔥 300 ккал\n\nҚұрамы:\n- ${_ingredients.join("\n- ")}\n- Дәмдеуіштер, май\n\nДайындалуы:\n1. Ингредиенттерді жуып тураңыз.\n2. Табада қуырып, пісіріңіз.';
-      } else if (lang == 'en') {
-        _generatedRecipe = '🍳 **Dish with ${_ingredients.join(", ")}**\n⏱ Prep: 20 min | 🔥 300 kcal\n\nIngredients:\n- ${_ingredients.join("\n- ")}\n- Spices, Oil\n\nInstructions:\n1. Prepare and chop ingredients.\n2. Fry on medium heat until ready.';
+      if (query.contains('пицца') || query.contains('pizza')) {
+        if (lang == 'kk') {
+          _generatedRecipe = '🍕 **Дәмді Үй Пиццасы**\n⏱ Дайындалу уақыты: 30 мин | 🔥 420 ккал\n\nҚұрамы:\n- Ұн - 250г, Ыстық су - 150мл, Ашытқы - 1 ш.қ.\n- Моцарелла сыры - 150г\n- Колбаса/Пепперони - 100г\n- Томат соусы, зәйтүн майы\n\nДайындалуы:\n1. Қамырды илеп, 15 минутқа қалдырыңыз.\n2. Қамырды жайып, соус жағыңыз, сыр мен колбасаны тізіңіз.\n3. 220°C духовкада 12-15 минут пісіріңіз.';
+        } else if (lang == 'ru') {
+          _generatedRecipe = '🍕 **Домашняя Пицца**\n⏱ Время: 30 мин | 🔥 420 ккал\n\nИнгредиенты:\n- Мука - 250г, Вода - 150мл, Дрожжи - 1 ч.л.\n- Сыр Моцарелла - 150г\n- Колбаса/Пепперони - 100г\n- Томатный соус, специи\n\nИнструкция:\n1. Замесите тесто и раскатайте круглую основу.\n2. Смажьте соусом, выложите сыр и начинку.\n3. Выпекайте при 220°C в течение 12-15 минут.';
+        } else {
+          _generatedRecipe = '🍕 **Homemade Pizza**\n⏱ Prep: 30 min | 🔥 420 kcal\n\nIngredients:\n- Flour - 250g, Water - 150ml, Yeast - 1 tsp\n- Mozzarella cheese - 150g\n- Pepperoni/Sausage - 100g\n- Tomato sauce\n\nInstructions:\n1. Prepare dough, roll into shape.\n2. Spread sauce, add cheese and toppings.\n3. Bake at 220°C for 12-15 minutes.';
+        }
       } else {
-        _generatedRecipe = '🍳 **Блюдо из ${_ingredients.join(", ")}**\n⏱ Время: 20 мин | 🔥 300 ккал\n\nИнгредиенты:\n- ${_ingredients.join("\n- ")}\n- Специи, Масло\n\nИнструкция:\n1. Нарежьте ингредиенты.\n2. Обжарьте на среднем огне до готовности.';
+        if (lang == 'kk') {
+          _generatedRecipe = '🍳 **${_ingredients.join(", ")} тағамы**\n⏱ Дайындалу уақыты: 20 мин | 🔥 300 ккал\n\nҚұрамы:\n- ${_ingredients.join("\n- ")}\n- Дәмдеуіштер, май\n\nДайындалуы:\n1. Ингредиенттерді жуып тураңыз.\n2. Табада қуырып, пісіріңіз.';
+        } else if (lang == 'en') {
+          _generatedRecipe = '🍳 **Dish with ${_ingredients.join(", ")}**\n⏱ Prep: 20 min | 🔥 300 kcal\n\nIngredients:\n- ${_ingredients.join("\n- ")}\n- Spices, Oil\n\nInstructions:\n1. Prepare and chop ingredients.\n2. Fry on medium heat until ready.';
+        } else {
+          _generatedRecipe = '🍳 **Блюдо из ${_ingredients.join(", ")}**\n⏱ Время: 20 мин | 🔥 300 ккал\n\nИнгредиенты:\n- ${_ingredients.join("\n- ")}\n- Специи, Масло\n\nИнструкция:\n1. Нарежьте ингредиенты.\n2. Обжарьте на среднем огне до готовности.';
+        }
       }
     });
   }
