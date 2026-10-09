@@ -1,4 +1,4 @@
-import 'dart0:convert';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -73,7 +73,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final String _bannerAdUnitId = 'ca-app-pub-3613410984183490/6007334630';
 
-  // Барлық тілдердегі мәтіндер сөздігі (Localization)
   final Map<String, Map<String, String>> _localizedStrings = {
     'kk': {
       'title': 'BiteCraft AI 🍳',
@@ -184,7 +183,6 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         onAdFailedToLoad: (ad, err) {
           ad.dispose();
-          // Егер жарнама жүктелмей қалса, 10 секундтан кейін қайта жүктеп көру
           Future.delayed(const Duration(seconds: 10), () {
             if (mounted) _loadBannerAd();
           });
@@ -205,7 +203,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _generateRecipeWithGemini() async {
-    // Ұяшықта жазу болса, оны тізімге автоматты түрде қосамыз
     if (_controller.text.trim().isNotEmpty) {
       _ingredients.add(_controller.text.trim());
       _controller.clear();
