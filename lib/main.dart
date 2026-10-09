@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package0:google_mobile_ads/google_mobile_ads.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -73,8 +73,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final String _bannerAdUnitId = 'ca-app-pub-3613410984183490/6007334630';
 
-  // 🔑 Сіз жіберген Gemini API кілті:
-  final String _geminiApiKey = 'AQ.Ab8RN6KJjyjeuzGiTccaI4wZzK6ry8V2Az3gXzRF2LY2z2AQYw'; 
+  // 🔑 Gemini API кілті:
+  final String _geminiApiKey = 'AQ.Ab8RN6KJjyjeuzGiTccaI4wZzK6ry8V2Az3gXzRF2LY2z2AQYw';
 
   final Map<String, Map<String, String>> _localizedStrings = {
     'kk': {
