@@ -27,9 +27,6 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Recreate Android Project Files (Fix V1 Embedding)
-        run: flutter create . --platforms=android
-
       - name: Build APK
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
