@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package0:google_mobile_ads/google_mobile_ads.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -73,6 +73,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final String _bannerAdUnitId = 'ca-app-pub-3613410984183490/6007334630';
 
+  // 🔑 Сіз жіберген Gemini API кілті:
+  final String _geminiApiKey = 'AQ.Ab8RN6KJjyjeuzGiTccaI4wZzK6ry8V2Az3gXzRF2LY2z2AQYw'; 
+
   final Map<String, Map<String, String>> _localizedStrings = {
     'kk': {
       'title': 'BiteCraft AI 🍳',
@@ -81,6 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'subtitle': 'Аспаздық көмекші',
       'recipe_title': 'Дайын рецепт:',
       'empty_alert': 'Өтініш, тағам немесе ингредиент атын енгізіңіз!',
+      'lang_name': 'Kazakh',
     },
     'ru': {
       'title': 'BiteCraft AI 🍳',
@@ -89,6 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'subtitle': 'Кулинарный помощник',
       'recipe_title': 'Готовый рецепт:',
       'empty_alert': 'Пожалуйста, введите название блюда или ингредиенты!',
+      'lang_name': 'Russian',
     },
     'en': {
       'title': 'BiteCraft AI 🍳',
@@ -97,6 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'subtitle': 'AI Culinary Assistant',
       'recipe_title': 'Generated Recipe:',
       'empty_alert': 'Please enter a dish or ingredient name!',
+      'lang_name': 'English',
     },
     'tr': {
       'title': 'BiteCraft AI 🍳',
@@ -105,6 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'subtitle': 'Mutfak Asistanı',
       'recipe_title': 'Hazır Tarif:',
       'empty_alert': 'Lütfen bir yemek veya malzeme adı girin!',
+      'lang_name': 'Turkish',
     },
     'ar': {
       'title': 'BiteCraft AI 🍳',
@@ -113,6 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'subtitle': 'مساعد الطهي',
       'recipe_title': 'الوصفة الجاهزة:',
       'empty_alert': 'الرجاء إدخال اسم الطبق أو المكونات!',
+      'lang_name': 'Arabic',
     },
     'de': {
       'title': 'BiteCraft AI 🍳',
@@ -121,6 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'subtitle': 'Kulinarischer Assistent',
       'recipe_title': 'Generiertes Rezept:',
       'empty_alert': 'Bitte geben Sie ein Gericht oder Zutaten ein!',
+      'lang_name': 'German',
     },
     'fr': {
       'title': 'BiteCraft AI 🍳',
@@ -129,6 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'subtitle': 'Assistant Culinaire',
       'recipe_title': 'Recette Générée:',
       'empty_alert': 'Veuillez entrer un nom de plat ou des ingrédients !',
+      'lang_name': 'French',
     },
     'es': {
       'title': 'BiteCraft AI 🍳',
@@ -137,6 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'subtitle': 'Asistente Culinario',
       'recipe_title': 'Receta Generada:',
       'empty_alert': '¡Por favor ingrese un plato o ingredientes!',
+      'lang_name': 'Spanish',
     },
     'zh': {
       'title': 'BiteCraft AI 🍳',
@@ -145,6 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'subtitle': '烹饪助手',
       'recipe_title': '生成的食谱：',
       'empty_alert': '请输入菜名或食材！',
+      'lang_name': 'Chinese',
     },
     'ja': {
       'title': 'BiteCraft AI 🍳',
@@ -153,6 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'subtitle': 'AI料理アシスタント',
       'recipe_title': '生成されたレシピ:',
       'empty_alert': '料理名または食材を入力してください！',
+      'lang_name': 'Japanese',
     },
     'ko': {
       'title': 'BiteCraft AI 🍳',
@@ -161,6 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'subtitle': '요리 도우미',
       'recipe_title': '생성된 레시피:',
       'empty_alert': '요리 이름이나 재료를 입력해주세요!',
+      'lang_name': 'Korean',
     },
   };
 
@@ -220,23 +234,25 @@ class _HomeScreenState extends State<HomeScreen> {
       _generatedRecipe = '';
     });
 
-    const String apiKey = 'YOUR_GEMINI_API_KEY';
+    final String langName = _getText('lang_name');
     final String prompt = '''
-    You are BiteCraft AI professional chef assistant.
-    User input ingredients/dish: ${_ingredients.join(", ")}.
-    Target Language Code: ${widget.currentLang}.
+    You are BiteCraft AI, an expert master chef.
+    Requested inputs: ${_ingredients.join(", ")}.
     
-    Provide a detailed, accurate and unique recipe in the target language (${widget.currentLang}).
-    Format:
+    STRICT LANGUAGE RULE:
+    You MUST output the WHOLE recipe EXCLUSIVELY in $langName language.
+    Never output in Russian or English unless explicitly requested!
+    
+    Provide a realistic, highly accurate step-by-step recipe:
     - Dish Name (with emoji)
-    - Cooking Time & Calories
-    - Complete Ingredient List
-    - Detailed Step-by-step cooking instructions.
+    - Preparation & Cooking Time | Estimated Calories
+    - Complete Ingredient List (with precise quantities)
+    - Detailed Step-by-Step Instructions.
     ''';
 
     try {
       final response = await http.post(
-        Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=$apiKey'),
+        Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$_geminiApiKey'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'contents': [
@@ -268,31 +284,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _generateSmartFallbackRecipe() {
-    final String query = _ingredients.join(" ").toLowerCase();
     String lang = widget.currentLang;
 
     setState(() {
-      if (query.contains('манты') || query.contains('manti')) {
-        _generatedRecipe = lang == 'kk'
-            ? '🥟 **Шырынды Манты**\n⏱ Дайындалу уақыты: 45 мин | 🔥 450 ккал\n\nҚұрамы:\n- Ұн - 500г, Су - 200мл, Тұз - 1 ш.қ.\n- Ет (сиыр/қой) - 600г\n- Пияз - 4-5 дана (шырынды болу үшін)\n- Картоп немесе асқабақ - 200г (қалау бойынша)\n- Өсімдік майы, тұз, қара бұрыш, зыра\n\nДайындалуы:\n1. Ұн, су, тұздан тығыз қамыр илеп, 20 минутқа жауып қойыңыз.\n2. Етті ұсақтап тураңыз (немесе фарш), пияз бен картопты кубиктеп турап, дәмдеуіштер қосып араластырыңыз.\n3. Қамырды жайып, шаршыларға кесіп, ішіне салмасын салып түйіңіз.\n4. Манты касқаны (мантоварка) майлап, мантыларды тигізбей тізіп, 40 минут буда пісіріңіз.'
-            : '🥟 **Сочные Манты**\n⏱ Время: 45 мин | 🔥 450 ккал\n\nИнгредиенты:\n- Мука - 500г, Вода - 200мл, Соль - 1 ч.л.\n- Мясо (говядина/баранина) - 600г\n- Лук репчатый - 4-5 шт.\n- Картофель или тыква - 200г\n- Специи: соль, черный перец, зира\n\nИнструкция:\n1. Замесите tight тесто и дайте отдохнуть 20 минут.\n2. Нарежьте мясо, лук и картофель мелкими кубиками, добавьте специи.\n3. Раскатайте тесто, нарежьте на квадраты, выложите начинку и слепите манты.\n4. Готовьте на пару в мантоварке 45 минут.';
-      } else if (query.contains('плов') || query.contains('палау') || query.contains('rice')) {
-        _generatedRecipe = lang == 'kk'
-            ? '🍲 **Дәмді Өзбек Палауы**\n⏱ Дайындалу уақыты: 60 мин | 🔥 550 ккал\n\nҚұрамы:\n- Күріш - 500г, Ет - 500г, Сәбіз - 500г\n- Пияз - 2 дана, Өсімдік майы - 150мл\n- Сарымсақ - 1 бас, Тұз, зыра, барбарис\n\nДайындалуы:\n1. Қазанда майды қыздырып, етті алтын түске енгенше қуырыңыз.\n2. Пияз бен сәбізді салып, жұмсарғанша қуырыңыз (Зирвак).\n3. Ыстық су құйып, дәмдеуіштер салып 25 мин бұқтырыңыз.\n4. Күрішті жуып, үстіне тегістеп салып, суы тартылғанша қайнатып, 20 мин демдеңіз.'
-            : '🍲 **Ароматный Плов**\n⏱ Время: 60 мин | 🔥 550 ккал\n\nИнгредиенты:\n- Рис - 500г, Мясо - 500г, Морковь - 500г\n- Лук - 2 шт., Масло - 150мл, Специи\n\nИнструкция:\n1. Обжарьте мясо, лук и морковь в раскаленном казане.\n2. Залейте водой и томите зирвак 25 минут.\n3. Выложите рис, добавьте чеснок, варите до впитывания воды и томите на слабом огне 20 минут.';
-      } else if (query.contains('пицца') || query.contains('pizza')) {
-        _generatedRecipe = lang == 'kk'
-            ? '🍕 **Итальяндық Пицца**\n⏱ Дайындалу уақыты: 25 мин | 🔥 380 ккал\n\nҚұрамы:\n- Ұн - 250г, Су - 150мл, Ашытқы - 1 ш.қ.\n- Сыр (Моцарелла) - 150г\n- Шұжық/Колбаса, Зайтүн, Томат соусы\n\nДайындалуы:\n1. Қамырды илеп, 15 минутқа қойыңыз.\n2. Қамырды дөңгелектеп жайып, томат соусын жағыңыз.\n3. Бетіне үгітілген сырды, шұжық пен зайтүнді тізіңіз.\n4. 220°C қызып тұрған духовкада 12-15 минут пісіріңіз.'
-            : '🍕 **Домашняя Пицца**\n⏱ Время: 25 мин | 🔥 380 ккал\n\nИнгредиенты:\n- Мука - 250г, Вода - 150мл, Дрожжи - 1 ч.л.\n- Сыр Моцарелла - 150г, Колбаса/Пепперони, Томатный соус\n\nИнструкция:\n1. Замесите тесто и раскатайте круг основу.\n2. Смажьте соусом, выложите сыр и начинку.\n3. Выпекайте при 220°C около 12-15 минут.';
-      } else if (query.contains('сорпа') || query.contains('суп') || query.contains('soup') || query.contains('борщ')) {
-        _generatedRecipe = lang == 'kk'
-            ? '🍲 **Үйдің Ыстық Сорпасы**\n⏱ Дайындалу уақыты: 40 мин | 🔥 280 ккал\n\nҚұрамы:\n- Ет (сүйекті) - 400г\n- Картоп - 3 дана, Сәбіз - 1 дана, Пияз - 1 дана\n- Тұз, бұрыш, аскөк (зелень)\n\nДайындалуы:\n1. Етті суға салып, көбігін алып, 30 минут қайнатыңыз.\n2. Туралған сәбіз, пияз және картопты қосыңыз.\n3. Тұз, дәмдеуіштер салып, картоп жұмсарғанша пісіріңіз. Бетіне аскөк себіңіз.'
-            : '🍲 **Домашний Суп**\n⏱ Время: 40 мин | 🔥 280 ккал\n\nИнгредиенты:\n- Мясо на кости - 400г\n- Картофель - 3 шт., Морковь - 1 шт., Лук - 1 шт.\n- Зелень, соль, перец\n\nИнструкция:\n1. Сварите мясной бульон, снимая пену.\n2. Добавьте нарезанные овощи: картофель, морковь и лук.\n3. Посолите, поперчите и варите до готовности овощей.';
+      if (lang == 'kk') {
+        _generatedRecipe = '🍳 **${_ingredients.join(", ")} тағамы**\n⏱ Дайындалу уақыты: 20 мин | 🔥 300 ккал\n\nҚұрамы:\n- ${_ingredients.join("\n- ")}\n- Дәмдеуіштер, май\n\nДайындалуы:\n1. Ингредиенттерді жуып тураңыз.\n2. Табада қуырып, пісіріңіз.';
+      } else if (lang == 'en') {
+        _generatedRecipe = '🍳 **Dish with ${_ingredients.join(", ")}**\n⏱ Prep: 20 min | 🔥 300 kcal\n\nIngredients:\n- ${_ingredients.join("\n- ")}\n- Spices, Oil\n\nInstructions:\n1. Prepare and chop ingredients.\n2. Fry on medium heat until ready.';
       } else {
-        // Жалпы ингредиенттерге негізделген рецепт
-        _generatedRecipe = lang == 'kk'
-            ? '🍳 **${_ingredients.join(", ")} негізіндегі тағам**\n⏱ Дайындалу уақыты: 25 мин | 🔥 320 ккал\n\nҚұрамы:\n- ${_ingredients.join("\n- ")}\n- Өсімдік майы - 2 ас қасық\n- Тұз, қара бұрыш, дәмдеуіштер - талғамға қарай\n\nДайындалуы:\n1. Барлық ингредиенттерді жуып, ұсақтап тураңыз.\n2. Табаға май құйып, қыздырып, құрамындағы өнімдерді кезегімен қуырыңыз.\n3. Тұз, бұрыш қосып, баяу отта 15 минут бұқтырып пісіріңіз.'
-            : '🍳 **Блюдо из: ${_ingredients.join(", ")}**\n⏱ Время: 25 мин | 🔥 320 ккал\n\nИнгредиенты:\n- ${_ingredients.join("\n- ")}\n- Масло растительное - 2 ст.л.\n- Соль, перец, специи по вкусу\n\nИнструкция:\n1. Подготовьте и нарежьте все ингредиенты.\n2. Обжарьте на разогретой сковороде с маслом.\n3. Добавьте специи, накройте крышкой и тушите 15 минут.';
+        _generatedRecipe = '🍳 **Блюдо из ${_ingredients.join(", ")}**\n⏱ Время: 20 мин | 🔥 300 ккал\n\nИнгредиенты:\n- ${_ingredients.join("\n- ")}\n- Специи, Масло\n\nИнструкция:\n1. Нарежьте ингредиенты.\n2. Обжарьте на среднем огне до готовности.';
       }
     });
   }
