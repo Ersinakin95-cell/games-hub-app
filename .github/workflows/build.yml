@@ -1,41 +1,23 @@
-name: Build Android App
+name: temp_app
+description: "BiteCraft AI Flutter application."
+publish_to: 'none'
 
-on:
-  push:
-    branches: [ "main" ]
-  workflow_dispatch:
+version: 1.0.0+1
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+environment:
+  sdk: '>=3.0.0 <4.0.0'
 
-    steps:
-      - uses: actions/checkout@v4
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.0
+  google_mobile_ads: ^5.0.0
+  cupertino_icons: ^1.0.6
 
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'zulu'
-          java-version: '17'
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
 
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.24.3'
-          channel: 'stable'
-
-      - name: Create Flutter Project Structure & Add Code
-        run: |
-          flutter create temp_app
-          cp lib/main.dart temp_app/lib/main.dart
-
-      - name: Build APK
-        run: |
-          cd temp_app
-          flutter build apk --debug
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: GamesHub-App
-          path: temp_app/build/app/outputs/flutter-apk/app-debug.apk
+flutter:
+  uses-material-design: true
