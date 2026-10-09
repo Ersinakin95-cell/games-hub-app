@@ -25,12 +25,20 @@ jobs:
           flutter-version: '3.24.3'
           channel: 'stable'
 
-      - name: Create Clean Flutter Project Structure
+      - name: Recreate Clean Project
         run: |
-          mkdir temp_app
-          mv lib pubspec.yaml android temp_app/ 2>/dev/null || true
-          flutter create --org com.example --project-name bitecraft_ai temp_app
+          mkdir -p temp_app
+          cp -r lib pubspec.yaml temp_app/ 2>/dev/null || true
           cd temp_app
+          rm -rf android
+          flutter create --org com.example --project-name bitecraft_ai --platforms android .
+          
+          # AndroidManifest.xml ішіне AdMob APPLICATION_ID қосу
+          MANIFEST_PATH="android/app/src/main/AndroidManifest.xml"
+          if [ -f "$MANIFEST_PATH" ]; then
+            sed -i '/<\/application>/i \        <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="ca-app-pub-3613410984183490~3659453026"/>' "$MANIFEST_PATH"
+          fi
+          
           flutter pub get
 
       - name: Build APK
