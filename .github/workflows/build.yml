@@ -25,14 +25,21 @@ jobs:
           flutter-version: '3.24.3'
           channel: 'stable'
 
-      - name: Install dependencies
-        run: flutter pub get
+      - name: Create Clean Flutter Project Structure
+        run: |
+          mkdir temp_app
+          mv lib pubspec.yaml android temp_app/ 2>/dev/null || true
+          flutter create --org com.example --project-name bitecraft_ai temp_app
+          cd temp_app
+          flutter pub get
 
       - name: Build APK
-        run: flutter build apk --debug
+        run: |
+          cd temp_app
+          flutter build apk --debug
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-release
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          name: bitecraft-ai-app
+          path: temp_app/build/app/outputs/flutter-apk/app-debug.apk
