@@ -24,11 +24,11 @@ jobs:
           flutter-version: '3.24.3'
           channel: 'stable'
 
-      - name: Clean Project
-        run: flutter clean
-
       - name: Install Dependencies
         run: flutter pub get
+
+      - name: Recreate Android Project Files (Fix V1 Embedding)
+        run: flutter create . --platforms=android
 
       - name: Build APK
         env:
