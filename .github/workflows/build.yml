@@ -27,8 +27,10 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Clean Build Cache
-        run: flutter clean
+      - name: Recreate Android Support Files
+        run: |
+          rm -rf android
+          flutter create . --platforms=android
 
       - name: Build APK
         run: flutter build apk --release --dart-define=GEMINI_API_KEY=AIzaSyAm44R-59SgK5k0J71XzE2v8Y3p0Q1w9Zx
