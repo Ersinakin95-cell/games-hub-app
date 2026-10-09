@@ -1,252 +1,235 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
-  runApp(const GamesHubApp());
+  runApp(const BiteCraftApp());
 }
 
-class GamesHubApp extends StatelessWidget {
-  const GamesHubApp({super.key});
+class BiteCraftApp extends StatelessWidget {
+  const BiteCraftApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'BiteCraft AI',
       debugShowCheckedModeBanner: false,
-      title: 'Ersinakyn Aziz - Games Hub',
-      theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color(0xFF0D1117),
+      theme: ThemeData(
+        scaffoldBackgroundColor: const Color(0xFFF8F9FA),
+        primaryColor: const Color(0xFF2ECC71),
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF161B22),
+          backgroundColor: Color(0xFF2ECC71),
           elevation: 0,
+          centerTitle: true,
+          titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ),
-      home: const MainPage(),
+      home: const HomeScreen(),
     );
   }
 }
 
-class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _MainPageState extends State<MainPage> {
-  int _currentIndex = 0;
+class _HomeScreenState extends State<HomeScreen> {
+  final TextEditingController _controller = TextEditingController();
+  final List<String> _ingredients = [];
+  File? _selectedImage;
+  bool _isLoading = false;
+  String _generatedRecipe = '';
 
-  final List<Widget> _pages = [
-    const GamesPage(),
-    const AbaiPage(),
-    const MukagaliPage(),
-    const MusicPage(),
-    const VideoPage(),
-    const ProfilePage(),
-  ];
+  // Gemini API-ді шақыру функциясы
+  Future<void> _generateRecipe() async {
+    if (_ingredients.isEmpty && _selectedImage == null) return;
+
+    setState(() {
+      _isLoading = true;
+      _generatedRecipe = '';
+    });
+
+    final String userLanguage = Localizations.localeOf(context).languageCode;
+    
+    // Тілге байланысты промпт дайындау
+    final String prompt = '''
+    You are BiteCraft AI chef assistant.
+    Ingredients: ${_ingredients.join(", ")}.
+    Language: $userLanguage.
+    Create 2 easy recipes using these ingredients in language '$userLanguage'.
+    Format output with title, prep time, calories, and step-by-step instructions.
+    ''';
+
+    try {
+      // AI-дан рецепт сұрау
+      await Future.delayed(const Duration(seconds: 2)); // Симуляция
+      setState(() {
+        _generatedRecipe = userLanguage == 'ru'
+            ? '🥗 **Овощной салат с сыром**\n⏱ Время: 15 мин | 🔥 220 ккал\n\nИнгредиенты:\n- Помидор, огурец, сыр\n\nИнструкция:\n1. Нарежьте овощи кубиками.\n2. Добавьте сыр и заправьте маслом.'
+            : userLanguage == 'kk'
+                ? '🥗 **Көкөніс пен ірімшік салаты**\n⏱ Уақыты: 15 мин | 🔥 220 ккал\n\nҚұрамы:\n- Қызанақ, қияр, ірімшік\n\nДайындалуы:\n1. Көкөністерді тураңыз.\n2. Ірімшік қосып, маймен араластырыңыз.'
+                : '🥗 **Fresh Vegetable Salad**\n⏱ Prep: 15 mins | 🔥 220 kcal\n\nIngredients:\n- Tomato, Cucumber, Cheese\n\nInstructions:\n1. Dice all vegetables.\n2. Add cheese and drizzle with olive oil.';
+      });
+    } catch (e) {
+      setState(() {
+        _generatedRecipe = 'Error generating recipe. Please try again.';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: source);
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+        _ingredients.add('Scanned Ingredients');
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Ersinakyn Aziz - Games Hub',
-          style: TextStyle(color: Color(0xFF00E5FF), fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
+        title: const Text('BiteCraft AI 🍳'),
       ),
-      body: _pages[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: const Color(0xFF161B22),
-        selectedItemColor: const Color(0xFF00E5FF),
-        unselectedItemColor: const Color(0xFF8B949E),
-        selectedFontSize: 11,
-        unselectedFontSize: 11,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.sports_esports), label: 'Games'),
-          BottomNavigationBarItem(icon: Icon(Icons.menu_book), label: 'Абай'),
-          BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Мұқағали'),
-          BottomNavigationBarItem(icon: Icon(Icons.music_note), label: 'Музыка'),
-          BottomNavigationBarItem(icon: Icon(Icons.videocam), label: 'Видео'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Профиль'),
-        ],
-      ),
-    );
-  }
-}
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Камера арқылы сканерлеу блогы
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10),
+                ],
+              ),
+              child: Column(
+                children: [
+                  if (_selectedImage != null)
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.file(_selectedImage!, height: 150, fit: BoxFit.cover),
+                    )
+                  else
+                    const Icon(Icons.kitchen, size: 60, color: Color(0xFF2ECC71)),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: () => _pickImage(ImageSource.camera),
+                        icon: const Icon(Icons.camera_alt, color: Colors.white),
+                        label: const Text('Camera', style: TextStyle(color: Colors.white)),
+                        style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2ECC71)),
+                      ),
+                      OutlinedButton.icon(
+                        onPressed: () => _pickImage(ImageSource.gallery),
+                        icon: const Icon(Icons.photo, color: Color(0xFF2ECC71)),
+                        label: const Text('Gallery', style: TextStyle(color: Color(0xFF2ECC71))),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
 
-// 1. GAMES PAGE
-class GamesPage extends StatelessWidget {
-  const GamesPage({super.key});
+            // Ингредиенттерді қолмен қосу
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    decoration: InputDecoration(
+                      hintText: 'Add ingredient (e.g. Milk, Eggs)...',
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.add_circle, color: Color(0xFF2ECC71), size: 40),
+                  onPressed: () {
+                    if (_controller.text.trim().isNotEmpty) {
+                      setState(() {
+                        _ingredients.add(_controller.text.trim());
+                        _controller.clear();
+                      });
+                    }
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
 
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: const Color(0xFF161B22),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: const Color(0xFF30363D)),
-          ),
-          child: const Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('GAMES HUB', style: TextStyle(color: Color(0xFF00E5FF), fontWeight: FontWeight.bold)),
-              Text('150 Coins', style: TextStyle(color: Color(0xFFE3B341), fontWeight: FontWeight.bold)),
-            ],
-          ),
-        ),
-        const SizedBox(height: 16),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: const Color(0xFF161B22),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: const Color(0xFF30363D)),
-          ),
-          child: const Column(
-            children: [
-              Text('Monetization Space (Google AdSense)', style: TextStyle(fontWeight: FontWeight.bold)),
-              SizedBox(height: 5),
-              Text('Жарнама блогы осы жерде шығады', style: TextStyle(color: Color(0xFF8B949E), fontSize: 12)),
-            ],
-          ),
-        ),
-        const SizedBox(height: 16),
-        const Text('Ойындар тізімі:', style: TextStyle(color: Color(0xFF8B949E), fontSize: 16)),
-        const SizedBox(height: 10),
-        _buildGameCard(context, '🏃 Om Nom Run', 'Қызықты ранер ойыны'),
-        _buildGameCard(context, '🎯 Bubble Shooter', 'Шарларды ату ойыны'),
-        _buildGameCard(context, '🎲 2048 Game', 'Логикалық сан ойыны'),
-      ],
-    );
-  }
+            // Қосылған ингредиенттердің тегтері
+            Wrap(
+              spacing: 8.0,
+              children: _ingredients.map((item) {
+                return Chip(
+                  label: Text(item, style: const TextStyle(fontWeight: FontWeight.w600)),
+                  backgroundColor: const Color(0xFF2ECC71).withOpacity(0.2),
+                  deleteIcon: const Icon(Icons.cancel, size: 18),
+                  onDeleted: () {
+                    setState(() {
+                      _ingredients.remove(item);
+                    });
+                  },
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 20),
 
-  static Widget _buildGameCard(BuildContext context, String title, String subtitle) {
-    return Card(
-      color: const Color(0xFF161B22),
-      margin: const EdgeInsets.only(bottom: 10),
-      child: ListTile(
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(subtitle, style: const TextStyle(color: Color(0xFF8B949E))),
-        trailing: const Icon(Icons.play_arrow, color: Color(0xFF00E5FF)),
-        onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('$title ойыны таңдалды')),
-          );
-        },
-      ),
-    );
-  }
-}
+            // Генерация батырмасы
+            ElevatedButton(
+              onPressed: _isLoading ? null : _generateRecipe,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2ECC71),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: _isLoading
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : const Text('Generate Recipes / Рецепт табу',
+                      style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold)),
+            ),
+            const SizedBox(height: 24),
 
-// 2. ABAI PAGE
-class AbaiPage extends StatelessWidget {
-  const AbaiPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        const Text('Абай мұрасы:', style: TextStyle(color: Color(0xFF8B949E), fontSize: 16)),
-        const SizedBox(height: 10),
-        _buildExpandableCard(
-          '📖 1. Бірінші қара сөз',
-          'Бұл жасқа келгенше жақсы өткіздік пе, жаман өткіздік пе, әйтеуір өмірді сүрдік... Енді не істеу керек? Ел бағу? Жоқ, елге бағым жоқ. Мал бағу? Жоқ, баға алмаймын. Ғылым бағу? Жоқ, ғылымды ұғатын кісі жоқ. Ақыры ойладым: осы ойыма келген нәрселерді жаза берейін, кімде-кім ішінен керекті сөз тапса, жазып алсын...',
-        ),
-        _buildExpandableCard(
-          '📖 2. Екінші қара сөз',
-          'Мен бала күнімде естуші едім, біздің қазақ сартты көрсе, «үлгісіз сарт» деуші еді... Енді қарап тұрсам, ноғайлар да, сарттар да, орыстар да бізден өнер-білімге алдеқайда ілгері екен.',
-        ),
-      ],
-    );
-  }
-
-  static Widget _buildExpandableCard(String title, String content) {
-    return Card(
-      color: const Color(0xFF161B22),
-      margin: const EdgeInsets.only(bottom: 10),
-      child: ExpansionTile(
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-        subtitle: const Text('Қазақша мазмұн (ашу үшін басыңыз)', style: TextStyle(color: Color(0xFF8B949E), fontSize: 12)),
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(content, style: const TextStyle(color: Color(0xFFC9D1D9), height: 1.5)),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// 3. MUKAGALI PAGE
-class MukagaliPage extends StatelessWidget {
-  const MukagaliPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        const Text('Мұқағали Мақатаев поэзиясы:', style: TextStyle(color: Color(0xFF8B949E), fontSize: 16)),
-        const SizedBox(height: 10),
-        AbaiPage._buildExpandableCard(
-          '✍️ Поэзия',
-          'Поэзия! Менімен егіз бе едің?\nСен мені сезесің бе, неге іздедім?\nСонда да бір өзіңмен тілдесемін...',
-        ),
-      ],
-    );
-  }
-}
-
-// 4. MUSIC PAGE
-class MusicPage extends StatelessWidget {
-  const MusicPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text('🎵 Музыка бөлімі дайындалуда...', style: TextStyle(color: Color(0xFF8B949E))),
-    );
-  }
-}
-
-// 5. VIDEO PAGE
-class VideoPage extends StatelessWidget {
-  const VideoPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text('🎬 Видео контент жақында қосылады...', style: TextStyle(color: Color(0xFF8B949E))),
-    );
-  }
-}
-
-// 6. PROFILE PAGE
-class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Card(
-        color: const Color(0xFF161B22),
-        child: const ListTile(
-          leading: Icon(Icons.person, color: Color(0xFF00E5FF)),
-          title: Text('Пайдаланушы'),
-          subtitle: Text('Баланс: 150 Coins', style: TextStyle(color: Color(0xFFE3B341))),
+            // AI Нәтижесі
+            if (_generatedRecipe.isNotEmpty)
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFF2ECC71).withOpacity(0.3)),
+                ),
+                child: Text(
+                  _generatedRecipe,
+                  style: const TextStyle(fontSize: 16, height: 1.5),
+                ),
+              ),
+          ],
         ),
       ),
     );
