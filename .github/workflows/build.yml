@@ -32,11 +32,11 @@ jobs:
           rm -rf android
           flutter create . --platforms=android --project-name=games_hub_app
 
-      - name: Build APK
-        run: flutter build apk --release --dart-define=GEMINI_API_KEY=AIzaSyAm44R-59SgK5k0J71XzE2v8Y3p0Q1w9Zx
+      - name: Build Debug APK
+        run: flutter build apk --debug --dart-define=GEMINI_API_KEY=AIzaSyAm44R-59SgK5k0J71XzE2v8Y3p0Q1w9Zx
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: bitecraft-ai-app
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
