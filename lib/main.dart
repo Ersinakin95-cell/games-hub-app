@@ -39,6 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<String> _ingredients = [];
   bool _isLoading = false;
   String _generatedRecipe = '';
+  String _selectedLanguage = 'kk'; // Әдепкі тіл: Қазақша
 
   void _generateRecipe() async {
     if (_ingredients.isEmpty) return;
@@ -48,17 +49,17 @@ class _HomeScreenState extends State<HomeScreen> {
       _generatedRecipe = '';
     });
 
-    final String userLanguage = Localizations.localeOf(context).languageCode;
-
     await Future.delayed(const Duration(seconds: 2));
 
     setState(() {
       _isLoading = false;
-      _generatedRecipe = userLanguage == 'ru'
-          ? '🥗 **Овощной салат с сыром**\n⏱ Время: 15 мин | 🔥 220 ккал\n\nИнгредиенты:\n- Помидор, огурец, сыр\n\nИнструкция:\n1. Нарежьте овощи кубиками.\n2. Добавьте сыр и заправьте маслом.'
-          : userLanguage == 'kk'
-              ? '🥗 **Көкөніс пен ірімшік салаты**\n⏱ Уақыты: 15 мин | 🔥 220 ккал\n\nҚұрамы:\n- Қызанақ, қияр, ірімшік\n\nДайындалуы:\n1. Көкөністерді тураңыз.\n2. Ірімшік қосып, маймен араластырыңыз.'
-              : '🥗 **Fresh Vegetable Salad**\n⏱ Prep: 15 mins | 🔥 220 kcal\n\nIngredients:\n- Tomato, Cucumber, Cheese\n\nInstructions:\n1. Dice all vegetables.\n2. Add cheese and drizzle with olive oil.';
+      if (_selectedLanguage == 'kk') {
+        _generatedRecipe = '🥗 **Дәмді лағман мен көкөністер жиынтығы**\n⏱ Дайындалу уақыты: 25 мин | 🔥 380 ккал\n\nҚұрамы:\n- ${_ingredients.join(", ")}\n\nДайындау қадамдары:\n1. Қазанда майды қыздырып, ет пен көкөністерді қуырыңыз.\n2. Тұз, бұрыш және дәмдеуіштер қосып, баяу отта бұқтырыңыз.\n3. Лағман кеспесін қайнатып, үстіне дайын соусты құйып ұсыныңыз.';
+      } else if (_selectedLanguage == 'ru') {
+        _generatedRecipe = '🥗 **Ароматный лагман с овощами**\n⏱ Время: 25 мин | 🔥 380 ккал\n\nИнгредиенты:\n- ${_ingredients.join(", ")}\n\nИнструкция:\n1. Обжарьте ингредиенты на среднем огне.\n2. Добавьте специи и соус по вкусу.\n3. Подавайте блюдо горячим!';
+      } else {
+        _generatedRecipe = '🥗 **Delicious Lagman Special**\n⏱ Prep: 25 mins | 🔥 380 kcal\n\nIngredients:\n- ${_ingredients.join(", ")}\n\nInstructions:\n1. Fry all components with spices.\n2. Simmer for 15 minutes.\n3. Serve hot!';
+      }
     });
   }
 
@@ -67,6 +68,27 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('BiteCraft AI 🍳'),
+        actions: [
+          DropdownButton<String>(
+            value: _selectedLanguage,
+            dropdownColor: const Color(0xFF2ECC71),
+            icon: const Icon(Icons.language, color: Colors.white),
+            underline: const SizedBox(),
+            onChanged: (String? newValue) {
+              if (newValue != null) {
+                setState(() {
+                  _selectedLanguage = newValue;
+                });
+              }
+            },
+            items: const [
+              DropdownMenuItem(value: 'kk', child: Text('🇰🇿 Қаз', style: TextStyle(color: Colors.white))),
+              DropdownMenuItem(value: 'ru', child: Text('🇷🇺 Рус', style: TextStyle(color: Colors.white))),
+              DropdownMenuItem(value: 'en', child: Text('🇺🇸 Eng', style: TextStyle(color: Colors.white))),
+            ],
+          ),
+          const SizedBox(width: 12),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -100,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: TextField(
                     controller: _controller,
                     decoration: InputDecoration(
-                      hintText: 'Add ingredient (e.g. Milk, Eggs)...',
+                      hintText: 'Ингредиент қосыңыз (мисалы: Лағман)...',
                       filled: true,
                       fillColor: Colors.white,
                       border: OutlineInputBorder(
@@ -150,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               child: _isLoading
                   ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text('Generate Recipes / Рецепт табу',
+                  : const Text('Рецепт табу / Найти рецепт',
                       style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold)),
             ),
             const SizedBox(height: 24),
