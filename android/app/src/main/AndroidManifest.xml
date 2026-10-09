@@ -13,7 +13,7 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3613410984183490~3659453026"/>
 
-        <!-- Flutter V2 Embedding талабы -->
+        <!-- Flutter V2 Embedding талабы (Қатені жоятын негізгі жол) -->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
