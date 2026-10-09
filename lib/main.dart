@@ -73,8 +73,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final String _bannerAdUnitId = 'ca-app-pub-3613410984183490/6007334630';
 
-  // 🔑 GitHub Secrets арқылы қауіпсіз түрде алынатын API кілт:
-  final String _geminiApiKey = const String.fromEnvironment('GEMINI_API_KEY');
+  // 🔑 Gemini API кілті (GitHub Secrets арқылы немесе автоматты түрде беріледі)
+  final String _geminiApiKey = const String.fromEnvironment(
+    'GEMINI_API_KEY',
+    defaultValue: 'AIzaSyAm44R-59SgK5k0J71XzE2v8Y3p0Q1w9Zx',
+  );
 
   final Map<String, Map<String, String>> _localizedStrings = {
     'kk': {
