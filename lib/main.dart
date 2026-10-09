@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'dart0:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -9,8 +9,21 @@ void main() {
   runApp(const BiteCraftApp());
 }
 
-class BiteCraftApp extends StatelessWidget {
+class BiteCraftApp extends StatefulWidget {
   const BiteCraftApp({Key? key}) : super(key: key);
+
+  @override
+  State<BiteCraftApp> createState() => _BiteCraftAppState();
+}
+
+class _BiteCraftAppState extends State<BiteCraftApp> {
+  String _selectedLanguage = 'kk';
+
+  void _changeLanguage(String langCode) {
+    setState(() {
+      _selectedLanguage = langCode;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,13 +40,23 @@ class BiteCraftApp extends StatelessWidget {
           titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ),
-      home: const HomeScreen(),
+      home: HomeScreen(
+        currentLang: _selectedLanguage,
+        onLangChanged: _changeLanguage,
+      ),
     );
   }
 }
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  final String currentLang;
+  final Function(String) onLangChanged;
+
+  const HomeScreen({
+    Key? key,
+    required this.currentLang,
+    required this.onLangChanged,
+  }) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -44,13 +67,103 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<String> _ingredients = [];
   bool _isLoading = false;
   String _generatedRecipe = '';
-  String _selectedLanguage = 'kk';
 
   BannerAd? _bannerAd;
   bool _isBannerLoaded = false;
 
-  // Тікелей сіздің AdMob Баннер ID-іңіз
   final String _bannerAdUnitId = 'ca-app-pub-3613410984183490/6007334630';
+
+  // Барлық тілдердегі мәтіндер сөздігі (Localization)
+  final Map<String, Map<String, String>> _localizedStrings = {
+    'kk': {
+      'title': 'BiteCraft AI 🍳',
+      'hint': 'Ингредиент немесе тағам атын жазыңыз...',
+      'btn_search': 'Рецепт табу',
+      'subtitle': 'Аспаздық көмекші',
+      'recipe_title': 'Дайын рецепт:',
+      'empty_alert': 'Өтініш, тағам немесе ингредиент атын енгізіңіз!',
+    },
+    'ru': {
+      'title': 'BiteCraft AI 🍳',
+      'hint': 'Введите ингредиент или название блюда...',
+      'btn_search': 'Найти рецепт',
+      'subtitle': 'Кулинарный помощник',
+      'recipe_title': 'Готовый рецепт:',
+      'empty_alert': 'Пожалуйста, введите название блюда или ингредиенты!',
+    },
+    'en': {
+      'title': 'BiteCraft AI 🍳',
+      'hint': 'Enter ingredient or dish name...',
+      'btn_search': 'Find Recipe',
+      'subtitle': 'AI Culinary Assistant',
+      'recipe_title': 'Generated Recipe:',
+      'empty_alert': 'Please enter a dish or ingredient name!',
+    },
+    'tr': {
+      'title': 'BiteCraft AI 🍳',
+      'hint': 'Malzeme veya yemek adı girin...',
+      'btn_search': 'Tarif Bul',
+      'subtitle': 'Mutfak Asistanı',
+      'recipe_title': 'Hazır Tarif:',
+      'empty_alert': 'Lütfen bir yemek veya malzeme adı girin!',
+    },
+    'ar': {
+      'title': 'BiteCraft AI 🍳',
+      'hint': 'أدخل المكون أو اسم الطبق...',
+      'btn_search': 'البحث عن وصفة',
+      'subtitle': 'مساعد الطهي',
+      'recipe_title': 'الوصفة الجاهزة:',
+      'empty_alert': 'الرجاء إدخال اسم الطبق أو المكونات!',
+    },
+    'de': {
+      'title': 'BiteCraft AI 🍳',
+      'hint': 'Zutat oder Gerichtsnamen eingeben...',
+      'btn_search': 'Rezept finden',
+      'subtitle': 'Kulinarischer Assistent',
+      'recipe_title': 'Generiertes Rezept:',
+      'empty_alert': 'Bitte geben Sie ein Gericht oder Zutaten ein!',
+    },
+    'fr': {
+      'title': 'BiteCraft AI 🍳',
+      'hint': 'Entrez un ingrédient ou le nom d\'un plat...',
+      'btn_search': 'Trouver une recette',
+      'subtitle': 'Assistant Culinaire',
+      'recipe_title': 'Recette Générée:',
+      'empty_alert': 'Veuillez entrer un nom de plat ou des ingrédients !',
+    },
+    'es': {
+      'title': 'BiteCraft AI 🍳',
+      'hint': 'Escriba un ingrediente o nombre del plato...',
+      'btn_search': 'Buscar Receta',
+      'subtitle': 'Asistente Culinario',
+      'recipe_title': 'Receta Generada:',
+      'empty_alert': '¡Por favor ingrese un plato o ingredientes!',
+    },
+    'zh': {
+      'title': 'BiteCraft AI 🍳',
+      'hint': '输入食材或菜名...',
+      'btn_search': '查找食谱',
+      'subtitle': '烹饪助手',
+      'recipe_title': '生成的食谱：',
+      'empty_alert': '请输入菜名或食材！',
+    },
+    'ja': {
+      'title': 'BiteCraft AI 🍳',
+      'hint': '食材や料理名を入力...',
+      'btn_search': 'レシピを検索',
+      'subtitle': 'AI料理アシスタント',
+      'recipe_title': '生成されたレシピ:',
+      'empty_alert': '料理名または食材を入力してください！',
+    },
+    'ko': {
+      'title': 'BiteCraft AI 🍳',
+      'hint': '재료나 요리 이름을 입력하세요...',
+      'btn_search': '레시피 찾기',
+      'subtitle': '요리 도우미',
+      'recipe_title': '생성된 레시피:',
+      'empty_alert': '요리 이름이나 재료를 입력해주세요!',
+    },
+  };
 
   @override
   void initState() {
@@ -71,6 +184,10 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         onAdFailedToLoad: (ad, err) {
           ad.dispose();
+          // Егер жарнама жүктелмей қалса, 10 секундтан кейін қайта жүктеп көру
+          Future.delayed(const Duration(seconds: 10), () {
+            if (mounted) _loadBannerAd();
+          });
         },
       ),
     )..load();
@@ -79,11 +196,27 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _bannerAd?.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
+  String _getText(String key) {
+    return _localizedStrings[widget.currentLang]?[key] ?? _localizedStrings['en']![key]!;
+  }
+
   Future<void> _generateRecipeWithGemini() async {
-    if (_ingredients.isEmpty) return;
+    // Ұяшықта жазу болса, оны тізімге автоматты түрде қосамыз
+    if (_controller.text.trim().isNotEmpty) {
+      _ingredients.add(_controller.text.trim());
+      _controller.clear();
+    }
+
+    if (_ingredients.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_getText('empty_alert'))),
+      );
+      return;
+    }
 
     setState(() {
       _isLoading = true;
@@ -92,16 +225,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
     const String apiKey = 'YOUR_GEMINI_API_KEY';
     final String prompt = '''
-    Сен BiteCraft AI кәсіби аспаз көмекшісісің. 
-    Пайдаланушы енгізген ингредиенттер/тағам: ${_ingredients.join(", ")}.
-    Тіл: $_selectedLanguage (kk = Қазақша, ru = Орысша, en = Ағылшынша).
+    You are BiteCraft AI professional chef assistant.
+    User input ingredients/dish: ${_ingredients.join(", ")}.
+    Target Language Code: ${widget.currentLang}.
     
-    Осы ингредиенттерге сәйкес келетін ТОЛЫҚ, НАҚТЫ әрі ДӘМДІ рецепт құрастыр.
-    Құрылымы:
-    - Тағамның аты (emoji-мен)
-    - Дайындалу уақыты мен калориясы
-    - Толық Ингредиенттер тізімі (өлшем бірліктерімен)
-    - Қадамдық егжей-тегжейлі дайындау нұсқаулығы.
+    Provide a detailed, delicious recipe in the target language (${widget.currentLang}).
+    Format:
+    - Dish Name (with emoji)
+    - Cooking Time & Calories
+    - Complete Ingredient List (with measurements)
+    - Step-by-step cooking instructions.
     ''';
 
     try {
@@ -140,14 +273,14 @@ class _HomeScreenState extends State<HomeScreen> {
   void _fallbackRecipe() {
     final String query = _ingredients.join(" ").toLowerCase();
     setState(() {
-      if (query.contains('плов') || query.contains('палау')) {
-        _generatedRecipe = _selectedLanguage == 'kk'
-            ? '🍲 **Дәмді Өзбек Палауы (Плов)**\n⏱ Дайындалу уақыты: 60 мин | 🔥 550 ккал\n\nҚұрамы:\n- Күріш (Алаңғасар немесе Лазер) - 500г\n- Қой немесе сиыр еті - 500г\n- Сәбіз - 500г\n- Пияз - 2 дана\n- Өсімдік майы - 150мл\n- Сарымсақ - 1 бас\n- Тұз, зыра (зиры), барбарис - талғамға қарай\n\nДайындау қадамдары:\n1. Қазанда майды жақсылап қыздырып, етті алтын түске енгенше қуырыңыз.\n2. Пиязды қосып, жұмсарғанша қуырыңыз, сосын сәбізді салып, жұмсарғанша араластырыңыз.\n3. Үстіне ыстық су құйып, тұз, зыра қосып, 25 минут баяу отта бұқтырыңыз (Зирвак дайындау).\n4. Күрішті жуып, зирвактың үстіне тегістеп салыңыз. Ортасына сарымсақты батырыңыз.\n5. Күріштің үстін 1 см су жауып тұратындай су құйып, су тартылғанша қайнатыңыз.\n6. Отты азайтып, қазанның бетін жауып, 20 минутқа демдеп қойыңыз.'
-            : '🍲 **Ароматный Узбекский Плов**\n⏱ Время: 60 мин | 🔥 550 ккал\n\nИнгредиенты:\n- Рис - 500г\n- Мясо (говядина/баранина) - 500г\n- Морковь - 500г\n- Лук - 2 шт.\n- Растительное масло - 150мл\n- Чеснок - 1 головка\n- Специи (зира, барбарис, соль)\n\nИнструкция:\n1. Обжарьте мясо в раскаленном казане до золотистой корочки.\n2. Добавьте лук и морковь, обжаривайте 10-15 минут.\n3. Залейте водой, добавьте специи и томите зирвак 25 минут.\n4. Выложите промытый рис, добавьте чеснок и залейте водой на 1 см выше риса.\n5. Когда вода впитается, закройте крышку и томите на слабом огне 20 минут.';
+      if (query.contains('плов') || query.contains('палау') || query.contains('rice')) {
+        _generatedRecipe = widget.currentLang == 'kk'
+            ? '🍲 **Дәмді Өзбек Палауы**\n⏱ Дайындалу уақыты: 60 мин | 🔥 550 ккал\n\nҚұрамы:\n- Күріш - 500г\n- Ет - 500г\n- Сәбіз - 500г\n- Пияз - 2 дана\n- Май - 150мл\n- Тұз, дәмдеуіштер\n\nНұсқаулық:\n1. Ет пен пиязды, сәбізді қуырыңыз.\n2. Су құйып 25 мин бұқтырыңыз.\n3. Күрішті салып, су тартылғанша қайнатып, 20 мин демдеңіз.'
+            : '🍲 **Delicious Pilaf / Плов**\n⏱ Prep: 60 min | 🔥 550 kcal\n\nIngredients:\n- Rice - 500g\n- Meat - 500g\n- Carrots - 500g\n- Onions - 2 pcs\n- Oil, Salt & Spices\n\nInstructions:\n1. Fry meat, onions, and carrots in oil.\n2. Add water and simmer for 25 minutes.\n3. Add rice, cook until water evaporates, then cover for 20 minutes.';
       } else {
-        _generatedRecipe = _selectedLanguage == 'kk'
-            ? '🍳 **${_ingredients.join(", ")} тағамы**\n⏱ Дайындалу уақыты: 20 мин | 🔥 300 ккал\n\nҚұрамы:\n- ${_ingredients.join("\n- ")}\n- Тұз, бұрыш, май\n\nДайындалуы:\n1. Ингредиенттерді жуып, тураңыз.\n2. Қызып тұрған табада майға қуырыңыз.\n3. Тұз бен дәмдеуіштер қосып, дайын болғанша пісіріңіз.'
-            : '🍳 **Блюдо из ${_ingredients.join(", ")}**\n⏱ Время: 20 мин | 🔥 300 ккал\n\nИнгредиенты:\n- ${_ingredients.join("\n- ")}\n- Соль, перец, масло\n\nИнструкция:\n1. Подготовьте и нарежьте ингредиенты.\n2. Обжарьте на разогретой сковороде.\n3. Добавьте специи и доведите до готовности.';
+        _generatedRecipe = widget.currentLang == 'kk'
+            ? '🍳 **${_ingredients.join(", ")} тағамы**\n⏱ Дайындалу уақыты: 20 мин | 🔥 300 ккал\n\nҚұрамы:\n- ${_ingredients.join("\n- ")}\n- Тұз, бұрыш, май\n\nДайындалуы:\n1. Ингредиенттерді жуып, тураңыз.\n2. Қызып тұрған табада майға қуырыңыз.\n3. Тұз бен дәмдеуіштер қосып, пісіріңіз.'
+            : '🍳 **Dish: ${_ingredients.join(", ")}**\n⏱ Prep: 20 min | 🔥 300 kcal\n\nIngredients:\n- ${_ingredients.join("\n- ")}\n- Salt, Pepper, Oil\n\nInstructions:\n1. Prepare and chop ingredients.\n2. Fry on medium heat.\n3. Season to taste and serve.';
       }
     });
   }
@@ -156,24 +289,30 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('BiteCraft AI 🍳'),
+        title: Text(_getText('title')),
         actions: [
           DropdownButton<String>(
-            value: _selectedLanguage,
+            value: widget.currentLang,
             dropdownColor: const Color(0xFF2ECC71),
             icon: const Icon(Icons.language, color: Colors.white),
             underline: const SizedBox(),
             onChanged: (String? newValue) {
               if (newValue != null) {
-                setState(() {
-                  _selectedLanguage = newValue;
-                });
+                widget.onLangChanged(newValue);
               }
             },
             items: const [
               DropdownMenuItem(value: 'kk', child: Text('🇰🇿 Қаз', style: TextStyle(color: Colors.white))),
               DropdownMenuItem(value: 'ru', child: Text('🇷🇺 Рус', style: TextStyle(color: Colors.white))),
               DropdownMenuItem(value: 'en', child: Text('🇺🇸 Eng', style: TextStyle(color: Colors.white))),
+              DropdownMenuItem(value: 'tr', child: Text('🇹🇷 Tür', style: TextStyle(color: Colors.white))),
+              DropdownMenuItem(value: 'ar', child: Text('🇸🇦 Arb', style: TextStyle(color: Colors.white))),
+              DropdownMenuItem(value: 'de', child: Text('🇩🇪 Deu', style: TextStyle(color: Colors.white))),
+              DropdownMenuItem(value: 'fr', child: Text('🇫🇷 Fra', style: TextStyle(color: Colors.white))),
+              DropdownMenuItem(value: 'es', child: Text('🇪🇸 Esp', style: TextStyle(color: Colors.white))),
+              DropdownMenuItem(value: 'zh', child: Text('🇨🇳 Zho', style: TextStyle(color: Colors.white))),
+              DropdownMenuItem(value: 'ja', child: Text('🇯🇵 Jpn', style: TextStyle(color: Colors.white))),
+              DropdownMenuItem(value: 'ko', child: Text('🇰🇷 Kor', style: TextStyle(color: Colors.white))),
             ],
           ),
           const SizedBox(width: 12),
@@ -197,12 +336,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                     child: Column(
-                      children: const [
-                        Icon(Icons.kitchen, size: 60, color: Color(0xFF2ECC71)),
-                        SizedBox(height: 10),
+                      children: [
+                        const Icon(Icons.kitchen, size: 60, color: Color(0xFF2ECC71)),
+                        const SizedBox(height: 10),
                         Text(
-                          'BiteCraft AI Assistant',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          _getText('subtitle'),
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -214,7 +353,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: TextField(
                           controller: _controller,
                           decoration: InputDecoration(
-                            hintText: 'Ингредиент немесе тағам аты...',
+                            hintText: _getText('hint'),
                             filled: true,
                             fillColor: Colors.white,
                             border: OutlineInputBorder(
@@ -222,6 +361,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               borderSide: BorderSide.none,
                             ),
                           ),
+                          onSubmitted: (_) => _generateRecipeWithGemini(),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -238,7 +378,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  if (_ingredients.isNotEmpty) const SizedBox(height: 12),
                   Wrap(
                     spacing: 8.0,
                     children: _ingredients.map((item) {
@@ -264,8 +404,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     child: _isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text('Рецепт табу / Найти рецепт',
-                            style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold)),
+                        : Text(
+                            _getText('btn_search'),
+                            style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
+                          ),
                   ),
                   const SizedBox(height: 24),
                   if (_generatedRecipe.isNotEmpty)
@@ -276,9 +418,19 @@ class _HomeScreenState extends State<HomeScreen> {
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(color: const Color(0xFF2ECC71).withOpacity(0.3)),
                       ),
-                      child: Text(
-                        _generatedRecipe,
-                        style: const TextStyle(fontSize: 15, height: 1.5),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _getText('recipe_title'),
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF2ECC71)),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            _generatedRecipe,
+                            style: const TextStyle(fontSize: 15, height: 1.5),
+                          ),
+                        ],
                       ),
                     ),
                 ],
