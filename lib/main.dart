@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void main() async {
-  // Ақ экран болып қатып қалмауы үшін интерфейсті алдын ала іске қосу
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Жарнама модулін қатесіз жүктеу
-  await MobileAds.instance.initialize();
+  try {
+    // Жарнаманы қатесіз іске қосу
+    await MobileAds.instance.initialize();
+  } catch (e) {
+    debugPrint('Ads initialization error: $e');
+  }
   
   runApp(const MyApp());
 }
@@ -28,9 +31,14 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,9 +47,13 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: const Center(
-        child: Text(
-          'BiteCraft AI сәтті іске қосылды!',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        child: Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Text(
+            'BiteCraft AI сәтті іске қосылды!\nAPI кілті қосылды.',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
         ),
       ),
     );
