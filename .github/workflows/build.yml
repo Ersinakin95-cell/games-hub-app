@@ -29,6 +29,11 @@ jobs:
         run: |
           sed -i 's/name: games-hub-app/name: games_hub_app/g' pubspec.yaml
 
+      - name: Recreate Android directory to fix v1 embedding
+        run: |
+          rm -rf android
+          flutter create . --platforms=android
+
       - name: Add AdMob ID to AndroidManifest.xml
         run: |
           python3 -c "
