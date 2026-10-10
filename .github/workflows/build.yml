@@ -25,21 +25,24 @@ jobs:
           flutter-version: '3.24.3'
           channel: 'stable'
 
-      - name: Re-create Android platform
+      - name: Fix project name in pubspec.yaml if needed
         run: |
-          rm -rf android
-          flutter create . --platforms=android
+          sed -i 's/name: games-hub-app/name: games_hub_app/g' pubspec.yaml
 
       - name: Add AdMob ID to AndroidManifest.xml
         run: |
           python3 -c "
           path = 'android/app/src/main/AndroidManifest.xml'
-          with open(path, 'r') as f:
-              content = f.read()
-          meta = '<meta-data android:name=\"com.google.android.gms.ads.APPLICATION_ID\" android:value=\"ca-app-pub-3940256099942544~3347511713\"/>'
-          content = content.replace('</application>', f'    {meta}\n    </application>')
-          with open(path, 'w') as f:
-              f.write(content)
+          try:
+              with open(path, 'r') as f:
+                  content = f.read()
+              meta = '<meta-data android:name=\"com.google.android.gms.ads.APPLICATION_ID\" android:value=\"ca-app-pub-3940256099942544~3347511713\"/>'
+              if '</application>' in content and 'com.google.android.gms.ads.APPLICATION_ID' not in content:
+                  content = content.replace('</application>', f'    {meta}\n    </application>')
+                  with open(path, 'w') as f:
+                      f.write(content)
+          except Exception as e:
+              print('AndroidManifest check skipped:', e)
           "
 
       - name: Install dependencies
