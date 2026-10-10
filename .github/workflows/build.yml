@@ -19,10 +19,11 @@ jobs:
           java-version: '17'
 
       - name: Set up Flutter
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@v3
         with:
           flutter-version: '3.24.3'
           channel: 'stable'
+          use-git: true
 
       - name: Install Dependencies
         run: flutter pub get
@@ -32,7 +33,7 @@ jobs:
           rm -rf android
           flutter create . --platforms=android --project-name=games_hub_app
 
-      - name: Build Stable APK
+      - name: Build APK
         run: flutter build apk --debug --dart-define=GEMINI_API_KEY=AIzaSyAm44R-59SgK5k0J71XzE2v8Y3p0Q1w9Zx
 
       - name: Upload APK Artifact
