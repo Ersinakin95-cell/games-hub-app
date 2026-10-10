@@ -25,6 +25,11 @@ jobs:
           flutter-version: '3.24.3'
           channel: 'stable'
 
+      - name: Remove old android directory and generate new one
+        run: |
+          rm -rf android
+          flutter create . --platforms=android --org com.bitecraft.ai
+
       - name: Install dependencies
         run: flutter pub get
 
