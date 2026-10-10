@@ -25,11 +25,7 @@ jobs:
           flutter-version: '3.24.3'
           channel: 'stable'
 
-      - name: Fix project name in pubspec.yaml if needed
-        run: |
-          sed -i 's/name: games-hub-app/name: games_hub_app/g' pubspec.yaml
-
-      - name: Recreate Android directory to fix v1 embedding
+      - name: Recreate Android directory
         run: |
           rm -rf android
           flutter create . --platforms=android
