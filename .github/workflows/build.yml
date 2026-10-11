@@ -26,7 +26,7 @@ jobs:
         run: flutter build web --release
 
       - name: Upload Web Artifact
-        uses: android/upload-artifact@v4
+        uses: actions/upload-artifact@v4
         with:
           name: github-pages-site
           path: build/web/
