@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MahjongApp());
 }
 
@@ -23,7 +22,6 @@ class MahjongApp extends StatelessWidget {
   }
 }
 
-// ------------------- БАСҚЫ МӘЗІР -------------------
 class MainMenuScreen extends StatefulWidget {
   const MainMenuScreen({super.key});
 
@@ -39,8 +37,9 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
+      body: Center(
         child: Container(
+          constraints: const BoxConstraints(maxWidth: 500), // Вебте телефон экраны сияқты әдемі көрінуі үшін
           decoration: const BoxDecoration(
             gradient: RadialGradient(
               colors: [Color(0xFF1E5E35), Color(0xFF0A2413)],
@@ -49,11 +48,11 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
           ),
           child: Column(
             children: [
-              // Жоғарғы панель (Монета мен Кристалл)
+              // Жоғарғы панель
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Row(
-                  mainAxisAlignment: MainSpanAlignment.between,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
@@ -96,7 +95,6 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
                         color: Colors.amberAccent,
-                        shadows: [Shadow(blurRadius: 10, color: Colors.black)],
                       ),
                     ),
                     Text(
@@ -109,7 +107,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
 
               const Spacer(),
 
-              // Мәзір батырмалары
+              // Батырмалар
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
@@ -141,7 +139,12 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                             context,
                             title: '🏪 ДҮКЕН',
                             color: Colors.green.shade700,
-                            onTap: () => _showShopDialog(context),
+                            onTap: () {
+                              setState(() => coins += 50);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Дүкенден бонус алынды!')),
+                              );
+                            },
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -153,7 +156,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                             onTap: () {
                               setState(() => coins += 100);
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('+100 Тиын сыйлыққа берілді!')),
+                                const SnackBar(content: Text('+100 Тиын қосылды!')),
                               );
                             },
                           ),
@@ -200,7 +203,6 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
             borderRadius: BorderRadius.circular(15),
             side: const BorderSide(color: Colors.amber, width: 2),
           ),
-          elevation: 5,
         ),
         onPressed: onTap,
         child: Text(
@@ -210,41 +212,8 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
       ),
     );
   }
-
-  void _showShopDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1E5E35),
-        title: const Text('🏪 Кәсіпкер Дүкені', style: TextStyle(color: Colors.amber)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Text('💎', style: TextStyle(fontSize: 24)),
-              title: const Text('50 Гауһар Тас', style: TextStyle(color: Colors.white)),
-              subtitle: const Text('500 тиынға сатып алу', style: TextStyle(color: Colors.white70)),
-              onTap: () {
-                if (coins >= 500) {
-                  setState(() {
-                    coins -= 500;
-                    gems += 50;
-                  });
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('50 Гауһар сатылып алынды!')),
-                  );
-                }
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
-// ------------------- ОЙЫН ЭКРАНЫ -------------------
 class GameScreen extends StatefulWidget {
   final int level;
   final int coins;
@@ -269,7 +238,6 @@ class _GameScreenState extends State<GameScreen> {
 
   void _generateTiles() {
     tiles.clear();
-    // 12 жұп (24 тас)
     List<String> deck = [];
     for (int i = 0; i < 12; i++) {
       String sym = symbols[i % symbols.length];
@@ -289,7 +257,6 @@ class _GameScreenState extends State<GameScreen> {
       setState(() => selectedIndex = null);
     } else {
       if (tiles[selectedIndex!] == tiles[index]) {
-        // Мемлекеттік/Ұлттық жұп табылды!
         setState(() {
           tiles[selectedIndex!] = '';
           tiles[index] = '';
@@ -297,7 +264,6 @@ class _GameScreenState extends State<GameScreen> {
           score += 20;
         });
 
-        // Ойын аяқталды ма тексеру
         if (tiles.every((element) => element == '')) {
           _showWinDialog();
         }
@@ -345,53 +311,49 @@ class _GameScreenState extends State<GameScreen> {
           )
         ],
       ),
-      body: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: const BoxDecoration(
-          gradient: RadialGradient(
-            colors: [Color(0xFF1E5E35), Color(0xFF0A2413)],
-            radius: 0.9,
+      body: Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 500),
+          padding: const EdgeInsets.all(16),
+          decoration: const BoxDecoration(
+            gradient: RadialGradient(
+              colors: [Color(0xFF1E5E35), Color(0xFF0A2413)],
+              radius: 0.9,
+            ),
           ),
-        ),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 4,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-          ),
-          itemCount: tiles.length,
-          itemBuilder: (context, index) {
-            if (tiles[index] == '') return const SizedBox.shrink();
+          child: GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 4,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+            ),
+            itemCount: tiles.length,
+            itemBuilder: (context, index) {
+              if (tiles[index] == '') return const SizedBox.shrink();
 
-            bool isSelected = selectedIndex == index;
-            return GestureDetector(
-              onTap: () => _onTileTap(index),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                decoration: BoxDecoration(
-                  color: isSelected ? Colors.amber : const Color(0xFFFFF8E7),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: isSelected ? Colors.white : Colors.amber.shade900,
-                    width: 3,
+              bool isSelected = selectedIndex == index;
+              return GestureDetector(
+                onTap: () => _onTileTap(index),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  decoration: BoxDecoration(
+                    color: isSelected ? Colors.amber : const Color(0xFFFFF8E7),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isSelected ? Colors.white : Colors.amber.shade900,
+                      width: 3,
+                    ),
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.4),
-                      blurRadius: 5,
-                      offset: const Offset(2, 4),
-                    )
-                  ],
-                ),
-                child: Center(
-                  child: Text(
-                    tiles[index],
-                    style: const TextStyle(fontSize: 32),
+                  child: Center(
+                    child: Text(
+                      tiles[index],
+                      style: const TextStyle(fontSize: 32),
+                    ),
                   ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );
