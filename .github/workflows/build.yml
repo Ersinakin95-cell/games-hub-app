@@ -25,6 +25,11 @@ jobs:
           flutter-version: '3.24.3'
           channel: 'stable'
 
+      - name: Clean and Recreate Android Platform
+        run: |
+          rm -rf android
+          flutter create . --platforms=android --org com.mahjong.kazakh
+
       - name: Install Dependencies
         run: flutter pub get
 
