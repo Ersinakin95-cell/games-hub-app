@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build Flutter Web
 
 on:
   push:
@@ -13,31 +13,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.3'
           channel: 'stable'
 
-      - name: Remove Old Android and Create Fresh v2
-        run: |
-          rm -rf android
-          flutter create . --platforms=android --project-name=games_hub_app --org=com.mahjong.kazakh
-
       - name: Get Dependencies
         run: flutter pub get
 
-      - name: Build Debug APK
-        run: flutter build apk --debug
+      - name: Build Web
+        run: flutter build web --release
 
-      - name: Upload APK Artifact
-        uses: actions/upload-artifact@v4
+      - name: Upload Web Artifact
+        uses: android/upload-artifact@v4
         with:
-          name: mahjong-kazakh-app
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          name: github-pages-site
+          path: build/web/
