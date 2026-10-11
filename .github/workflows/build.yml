@@ -19,8 +19,13 @@ jobs:
           flutter-version: '3.24.3'
           channel: 'stable'
 
-      - name: Create Web Platform Files
-        run: flutter create . --platforms=web
+      - name: Fix Package Name and Create Web Safely
+        run: |
+          # pubspec.yaml ішіндегі атауды қатесіз ету
+          sed -i 's/name: .*/name: games_hub_app/g' pubspec.yaml
+          
+          # Репозиторий атауына тәуелсіз веб платформа файлдарын жасау
+          flutter create . --platforms=web --project-name=games_hub_app
 
       - name: Get Dependencies
         run: flutter pub get
