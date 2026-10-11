@@ -25,6 +25,17 @@ jobs:
           flutter-version: '3.24.3'
           channel: 'stable'
 
+      - name: Fix Android and Recreate
+        run: |
+          # Ескі қате android папкасын толығымен жою
+          rm -rf android
+          
+          # pubspec.yaml файлындағы пакет атын репозиторийден тәуелсіз ету
+          sed -i 's/name: .*/name: games_hub_app/g' pubspec.yaml
+          
+          # Жаңа таза android платформасын жасау (дефис мәселесін айналып өту үшін --project-name қолданамыз)
+          flutter create . --platforms=android --project-name=games_hub_app --org=com.mahjong.kazakh
+
       - name: Install Dependencies
         run: flutter pub get
 
